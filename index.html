@@ -1,0 +1,1569 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Вчи англійську через улюблені пісні: рядок за рядком, караоке з пропусками, слова з пам'яті.">
+<title>Рядок за рядком</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Nunito:wght@500;700;800&display=swap">
+<style>
+:root{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+
+/* Layout: one narrow column (phone first), sticky action bar at the bottom of lesson screens; the song is a vinyl disc that fills with progress. */
+:root {
+  --bg: #F3F4FA;
+  --surface: #FFFFFF;
+  --ink: #1A1D3A;
+  --muted: #646a8f;
+  --line: #E1E3F0;
+  --accent: #3552F2;
+  --accent-deep: #2337B8;
+  --on-accent: #FFFFFF;
+  --sun: #FFB21E;
+  --sun-deep: #D98D00;
+  --chip: #EBEEFF;
+  --good: #0E9C62;
+  --good-bg: #DAF5E8;
+  --bad: #D93A40;
+  --bad-bg: #FCE3E3;
+  --on-good: #FFFFFF;
+  --on-bad: #FFFFFF;
+  --disc: #1A1D3A;
+  --disc-groove: #2B2F55;
+  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1126; --surface: #1A1D3B; --ink: #F0F1FA; --muted: #A3A8CC; --line: #2C3061;
+    --accent: #6C83FF; --accent-deep: #3A4DC2; --on-accent: #FFFFFF; --sun: #FFC23D; --sun-deep: #B98000;
+    --chip: #252A57; --good: #3DD68C; --good-bg: #123828; --bad: #FF6D70; --bad-bg: #3D1B22; --on-good: #06281A; --on-bad: #2E0A0D;
+    --disc: #070818; --disc-groove: #1C1F43; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1126; --surface: #1A1D3B; --ink: #F0F1FA; --muted: #A3A8CC; --line: #2C3061;
+  --accent: #6C83FF; --accent-deep: #3A4DC2; --on-accent: #FFFFFF; --sun: #FFC23D; --sun-deep: #B98000;
+  --chip: #252A57; --good: #3DD68C; --good-bg: #123828; --bad: #FF6D70; --bad-bg: #3D1B22; --on-good: #06281A; --on-bad: #2E0A0D;
+  --disc: #070818; --disc-groove: #1C1F43; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.45; }
+#app { max-width: 520px; margin: 0 auto; padding-block: 16px 120px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 16px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; line-height: 1.2; }
+h1 { font-size: 22px; font-weight: 800; }
+h2 { font-size: 19px; font-weight: 700; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.label { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.card { background: var(--surface); border: 2px solid var(--line); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 17px; letter-spacing: -.01em; }
+.brand span { color: var(--accent); }
+.badge { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 99px; background: var(--chip); color: var(--muted); white-space: nowrap; }
+.badge.on { color: var(--good); background: var(--good-bg); }
+
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.btn { appearance: none; border: 0; border-radius: 16px; padding: 15px 18px; width: 100%; font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: .02em; background: var(--accent); color: var(--on-accent); box-shadow: 0 4px 0 var(--accent-deep); transition: transform .06s, box-shadow .06s; }
+.btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--accent-deep); }
+.btn:disabled { opacity: .45; cursor: default; transform: none; }
+.btn.sun { background: var(--sun); color: #2A1A00; box-shadow: 0 4px 0 var(--sun-deep); }
+.btn.sun:active { box-shadow: 0 0 0 var(--sun-deep); }
+.btn.ghost { background: var(--surface); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.btn.ghost:active { box-shadow: 0 0 0 var(--line); }
+.btn.good { background: var(--good); color: var(--on-good); box-shadow: 0 4px 0 color-mix(in srgb, var(--good) 60%, #000); }
+.btn.bad { background: var(--bad); color: var(--on-bad); box-shadow: 0 4px 0 color-mix(in srgb, var(--bad) 60%, #000); }
+.btn.sm { width: auto; padding: 10px 14px; font-size: 13px; }
+.linkbtn { background: none; border: 0; color: var(--accent); font-weight: 800; padding: 6px 0; text-decoration: underline; text-underline-offset: 3px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+input[type=text], textarea { width: 100%; font: inherit; font-size: 17px; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+textarea { min-height: 180px; resize: vertical; font-size: 15px; }
+input[type=text]:focus, textarea:focus { border-color: var(--accent); outline: none; }
+
+/* Home: vinyl */
+.hero { display: grid; grid-template-columns: 132px 1fr; gap: 16px; align-items: center; }
+.disc { width: 132px; aspect-ratio: 1; max-width: 100%; border-radius: 50%; position: relative; background:
+  radial-gradient(circle, var(--sun) 0 17%, var(--disc) 17.5% 20%, transparent 20.5%),
+  repeating-radial-gradient(circle, var(--disc) 0 3px, var(--disc-groove) 3px 4px); box-shadow: 0 6px 0 var(--line); }
+.disc::before { content: ""; position: absolute; inset: -7px; border-radius: 50%; background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--line) 0); -webkit-mask: radial-gradient(circle, transparent 66px, #000 67px); mask: radial-gradient(circle, transparent 66px, #000 67px); }
+.disc::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: var(--disc); }
+.pct { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.pct small { font-size: 22px; }
+.songname { font-weight: 800; font-size: 17px; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px; }
+.fact { font-size: 13px; font-weight: 700; background: var(--chip); border-radius: 99px; padding: 3px 10px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px; }
+.stat b { display: block; font-family: var(--font-display); font-size: 24px; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 13px; color: var(--muted); font-weight: 700; }
+.wordlist { display: flex; flex-direction: column; }
+.wordrow { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.wordrow:last-child { border-bottom: 0; }
+.dots { display: flex; gap: 3px; align-items: center; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.dots i.f { background: var(--good); }
+details > summary { cursor: pointer; font-weight: 800; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+details > summary::after { content: "+"; font-family: var(--font-display); color: var(--muted); }
+details[open] > summary::after { content: "–"; }
+details > summary::-webkit-details-marker { display: none; }
+.lessons-left { font-size: 14px; font-weight: 700; color: var(--muted); text-align: center; }
+
+/* Lesson */
+.lessonbar { display: flex; align-items: center; gap: 12px; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding-block: 6px; z-index: 5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.x { width: 40px; height: 40px; flex: none; border-radius: 12px; border: 0; background: transparent; color: var(--muted); font-size: 24px; line-height: 1; }
+.track { flex: 1; height: 14px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.track > div { height: 100%; background: var(--sun); border-radius: 99px; transition: width .35s ease; box-shadow: inset 0 -4px 0 rgba(0,0,0,.08); }
+.kind { font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.bigword { font-family: var(--font-display); font-size: 34px; font-weight: 800; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.say { font-weight: 800; color: var(--muted); }
+.lyric { font-family: var(--font-display); font-weight: 600; font-size: 21px; line-height: 1.5; overflow-wrap: anywhere; }
+.lyric.prev { font-size: 17px; color: var(--muted); }
+.tr { font-size: 17px; font-weight: 700; }
+.note { background: var(--chip); border-radius: 14px; padding: 10px 12px; font-size: 15px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 12px; padding: 7px 12px; font-weight: 800; font-size: 15px; box-shadow: 0 3px 0 var(--line); }
+.chip .tip { display: block; font-weight: 700; font-size: 13px; color: var(--accent); }
+.speak { display: inline-flex; align-items: center; gap: 8px; border: 0; background: var(--chip); color: var(--accent); border-radius: 12px; padding: 9px 14px; font-weight: 800; }
+.speak svg { width: 20px; height: 20px; }
+.gap { display: inline-block; font: inherit; font-size: 18px; font-family: var(--font-body); font-weight: 800; color: var(--accent); background: var(--chip); border: 0; border-bottom: 3px solid var(--accent); border-radius: 8px 8px 0 0; padding: 0 6px; margin: 2px 0; min-width: 3.2em; text-align: center; vertical-align: baseline; }
+.gap:focus { outline: none; background: var(--surface); box-shadow: 0 0 0 2px var(--accent); }
+.gap.ok { color: var(--good); border-color: var(--good); background: var(--good-bg); }
+.gap.no { color: var(--bad); border-color: var(--bad); background: var(--bad-bg); text-decoration: line-through; }
+.fix { color: var(--good); font-weight: 800; font-family: var(--font-body); font-size: 16px; }
+.sungline .w { display: inline-block; padding: 0 3px; border-radius: 6px; margin: 1px 0; }
+.sungline .w.hit { background: var(--good-bg); color: var(--good); }
+.sungline .w.miss { color: var(--muted); text-decoration: underline wavy var(--bad); text-underline-offset: 5px; }
+.mic { width: 96px; height: 96px; border-radius: 50%; border: 0; background: var(--accent); color: var(--on-accent); box-shadow: 0 5px 0 var(--accent-deep); display: grid; place-items: center; margin: 4px auto; }
+.mic svg { width: 40px; height: 40px; }
+.mic.live { background: var(--bad); box-shadow: 0 0 0 10px color-mix(in srgb, var(--bad) 25%, transparent); animation: pulse 1.2s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 18px color-mix(in srgb, var(--bad) 10%, transparent); } }
+.heard { min-height: 1.5em; text-align: center; color: var(--muted); font-style: italic; }
+.actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; padding-block: 14px calc(14px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--surface); border-top: 2px solid var(--line); }
+.actionbar.ok { background: var(--good-bg); border-color: transparent; }
+.actionbar.no { background: var(--bad-bg); border-color: transparent; }
+.actionbar .in { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.verdict { font-family: var(--font-display); font-weight: 800; font-size: 17px; }
+.actionbar.ok .verdict { color: var(--good); }
+.actionbar.no .verdict { color: var(--bad); }
+.resultpct { text-align: center; }
+.resultpct .pct { font-size: 56px; }
+.delta { font-family: var(--font-display); font-weight: 800; color: var(--good); font-size: 20px; }
+.progressline { height: 12px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.progressline > div { height: 100%; background: var(--accent); transition: width .3s; }
+.warn { background: var(--bad-bg); color: var(--ink); border-radius: 14px; padding: 10px 12px; font-size: 15px; }
+.okbox { background: var(--good-bg); border-radius: 14px; padding: 10px 12px; font-size: 15px; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; white-space: pre-wrap; background: var(--chip); border-radius: 12px; padding: 10px; max-height: 160px; overflow: auto; }
+ol.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (max-width: 360px) { .hero { grid-template-columns: 1fr; justify-items: center; text-align: center; } .facts { justify-content: center; } }
+/* v2 additions */
+.hinted { box-shadow: 0 0 0 3px var(--sun) !important; }
+.gap.retry { color: var(--ink); border-color: var(--sun-deep); background: color-mix(in srgb, var(--sun) 22%, var(--surface)); }
+.diff { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: .04em; }
+.diff .x { color: var(--bad); text-decoration: underline 3px; text-underline-offset: 5px; }
+.diff .gone { color: var(--bad); }
+.diff .extra { color: var(--bad); text-decoration: line-through; }
+.hintbox { background: color-mix(in srgb, var(--sun) 20%, var(--surface)); border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.opts { display: grid; gap: 10px; }
+.opt { text-align: left; border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 16px; padding: 14px 16px; font-weight: 800; font-size: 18px; box-shadow: 0 4px 0 var(--line); transition: transform .06s, box-shadow .06s; }
+.opt:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.opt.ok { border-color: var(--good); background: var(--good-bg); color: var(--good); box-shadow: 0 4px 0 var(--good); }
+.opt.no { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); box-shadow: 0 4px 0 var(--bad); }
+.opt:disabled { cursor: default; }
+.slots { min-height: 62px; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; padding-bottom: 10px; border-bottom: 2px dashed var(--line); }
+.tiles { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tile { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 12px; padding: 9px 13px; font-weight: 800; font-size: 17px; box-shadow: 0 3px 0 var(--line); }
+.tile.used { visibility: hidden; }
+.tile.ok { border-color: var(--good); color: var(--good); }
+.tile.no { border-color: var(--bad); color: var(--bad); }
+.fixed { color: var(--muted); font-weight: 700; }
+.kw { transition: color .15s; }
+.kw.on { color: var(--accent); }
+.audiorow { display: flex; flex-wrap: wrap; gap: 8px; }
+.speak.on { background: var(--accent); color: var(--on-accent); }
+.playbig { width: 104px; height: 104px; border-radius: 28px; border: 0; background: var(--accent); color: var(--on-accent); box-shadow: 0 5px 0 var(--accent-deep); display: grid; place-items: center; margin: 4px auto; }
+.playbig svg { width: 46px; height: 46px; }
+.playbig:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--accent-deep); }
+.parts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.part { border: 2px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 10px; padding: 6px 10px; font-weight: 800; font-size: 18px; display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.part small { font-size: 12px; color: var(--accent); font-weight: 800; }
+.part.on { border-color: var(--accent); }
+.plus { color: var(--muted); font-weight: 800; }
+.audiocard input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.filelabel { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.syncnow { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.4; overflow-wrap: anywhere; }
+.syncnext { color: var(--muted); font-weight: 700; }
+.syncprev { color: var(--good); font-weight: 700; font-size: 14px; }
+.tapbtn { min-height: 120px; font-size: 18px; }
+.timer { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--muted); }
+.adj { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted); font-weight: 700; }
+.adj button { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 4px 10px; font-weight: 800; }
+
+#ytbox { max-width: 520px; margin: 0 auto; padding-top: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#ytbox .frame { width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #000; }
+#ytbox .frame iframe, #ytbox .frame > div { width: 100%; height: 100%; display: block; border: 0; }
+.chip.chipon { border-color: var(--accent); color: var(--accent); }
+.klyrics { gap: 10px; }
+.kl { font-family: var(--font-display); font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.kl.prev { font-size: 15px; color: var(--muted); }
+.kl.next { font-size: 16px; color: var(--muted); }
+.kl.cur { font-size: 22px; }
+.kl .kok { color: var(--good); }
+.kl .kno { color: var(--bad); text-decoration: underline wavy var(--bad); text-underline-offset: 5px; }
+.kl .kblank { color: var(--muted); letter-spacing: .05em; }
+.lessonbar { position: static; }
+</style>
+</head>
+<body>
+<div id="ytbox" hidden><div class="frame"><div id="yt"></div></div></div>
+<div id="app"></div>
+<div id="bar" class="actionbar" hidden><div class="in" id="barin"></div></div>
+<script>
+(() => {
+"use strict";
+/* ---------- helpers ---------- */
+const app = document.getElementById("app");
+const bar = document.getElementById("bar");
+const barin = document.getElementById("barin");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const DAY = 86400000;
+const INTERVALS = [1, 3, 7, 14, 30];
+const fmtPct = v => (Math.floor(v * 10) / 10).toFixed(1).replace(".", ",");
+const ymd = t => { const d = new Date(t); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmtTime = t => { t = Math.max(0, t || 0); return Math.floor(t / 60) + ":" + String(Math.floor(t % 60)).padStart(2, "0"); };
+const ICON_SPEAK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
+const ICON_MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+
+function norm(s) { return String(s || "").toLowerCase().replace(/[’‘`´]/g, "'").replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim(); }
+function toks(s) { return (norm(s).match(/[a-z0-9']+/g) || []).map(w => w.replace(/^'+|'+$/g, "")).filter(Boolean); }
+const clean = s => norm(s).replace(/'/g, "").replace(/\s+/g, "");
+function lev(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) { const cur = [i]; for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
+  return prev[n];
+}
+function same(a, b) { a = clean(a); b = clean(b); return !!a && a === b; }
+function near(a, b) { a = clean(a); b = clean(b); if (!a || !b) return false; return lev(a, b) <= Math.max(1, Math.round(b.length / 4)); }
+/* show the learner's own spelling with the wrong spots marked, without revealing the answer */
+function diffHtml(typed, target) {
+  const a = clean(typed), b = clean(target); const m = a.length, n = b.length;
+  const D = Array.from({ length: m + 1 }, (_, i) => Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0));
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) D[i][j] = Math.min(D[i - 1][j] + 1, D[i][j - 1] + 1, D[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  const out = []; let i = m, j = n;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && D[i][j] === D[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)) { out.push(a[i - 1] === b[j - 1] ? esc(a[i - 1]) : `<span class="x">${esc(a[i - 1])}</span>`); i--; j--; }
+    else if (j > 0 && D[i][j] === D[i][j - 1] + 1) { out.push(`<span class="gone">_</span>`); j--; }
+    else { out.push(`<span class="extra">${esc(a[i - 1])}</span>`); i--; }
+  }
+  return `<span class="diff">${out.reverse().join("")}</span>`;
+}
+const STOP = new Set("i you me my mine your yours he she it its we us our they them their a an the to of in on at by for and or but so if is am are was were be been being do does did don't doesn't didn't i'm you're it's that's this that these those with as from up down out not no yes oh yeah ooh ah la na hey just".split(" "));
+function weight(w) { return STOP.has(w) ? 0.5 : 1 + Math.min(0.6, Math.max(0, w.length - 4) * 0.12); }
+function syllabify(w) {
+  const parts = w.toLowerCase().match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/g);
+  if (parts && parts.length > 1 && /^[^aeiouy]*e$/.test(parts[parts.length - 1])) parts.splice(-2, 2, parts[parts.length - 2] + parts[parts.length - 1]);
+  return parts && parts.join("") === w.toLowerCase() && parts.length > 1 ? parts : [w];
+}
+const UA_POOL = ["ніч", "серце", "дім", "світло", "час", "дорога", "сон", "вогонь", "день", "вода", "небо", "друг", "голос", "місто", "думати", "бігти", "знати", "завжди", "далеко", "холодний"];
+const EN_POOL = ["night", "heart", "home", "light", "time", "road", "dream", "fire", "water", "never", "always", "think", "know", "away", "cold", "friend", "voice", "city"];
+
+/* ---------- state ---------- */
+const KEY = "ryadok-state-v1";
+function blank() { return { v: 2, updatedAt: 0, cur: null, songs: {}, words: {}, streak: { last: null, n: 0 } }; }
+function loadLocal() { try { const t = localStorage.getItem(KEY); if (t) return Object.assign(blank(), JSON.parse(t)); } catch (e) {} return blank(); }
+let S = loadLocal();
+let cloudRef = null, cloudBusy = false, cloudDirty = false, cloudTimer = null;
+function save() {
+  S.updatedAt = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  if (cloudRef) { cloudDirty = true; clearTimeout(cloudTimer); cloudTimer = setTimeout(pushCloud, 1500); }
+}
+async function pushCloud() {
+  if (!cloudRef || cloudBusy || !cloudDirty) return;
+  cloudBusy = true; cloudDirty = false;
+  try { await cloudRef.set({ json: JSON.stringify(S), updatedAt: S.updatedAt }); }
+  catch (e) { if (e && e.code === "unavailable") cloudDirty = true; }
+  cloudBusy = false;
+  if (cloudDirty) { clearTimeout(cloudTimer); cloudTimer = setTimeout(pushCloud, 3000); }
+}
+const curSong = () => S.cur ? S.songs[S.cur] : null;
+let SES = null, VIEW = "home";
+
+/* ---------- optional AI (the learner's own Claude API key, kept only in this browser) ---------- */
+const KEYKEY = "ryadok-api-key";
+function getApiKey() { try { return localStorage.getItem(KEYKEY) || ""; } catch (e) { return ""; } }
+function makeSample() {
+  const key = getApiKey(); if (!key) return null;
+  const call = async (input, opts = {}) => {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: opts.modelTier === "quick" ? "claude-haiku-5-5" : "claude-sonnet-5-5", max_tokens: 6000, messages: [{ role: "user", content: String(input) }] })
+    });
+    if (!r.ok) throw { code: r.status === 429 ? "rate_limited" : r.status === 401 ? "not_granted" : "error", message: await r.text() };
+    const j = await r.json();
+    return { text: (j.content || []).map(c => c.text || "").join(""), truncated: j.stop_reason === "max_tokens" };
+  };
+  const f = (i, o) => call(i, o);
+  f.json = async (i, o) => { const { text } = await call(i + "\n\nВідповідай лише валідним JSON, без markdown.", o); const a = text.indexOf("{"), z = text.lastIndexOf("}"); return JSON.parse(text.slice(a, z + 1)); };
+  return f;
+}
+let SAMPLE = makeSample(), DICT = null, TTS = null, cloudOn = false;
+
+/* ---------- voice (Claude voice when offered, else the browser's) ---------- */
+let enVoice = null;
+const hasSynth = "speechSynthesis" in window;
+function pickVoice() {
+  try {
+    const vs = speechSynthesis.getVoices();
+    enVoice = vs.find(v => /en[-_]US/i.test(v.lang) && /google|samantha|aria|jenny/i.test(v.name)) || vs.find(v => /en[-_]US/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+  } catch (e) {}
+}
+if (hasSynth) { pickVoice(); try { speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {} }
+function synthSay(list, rate) {
+  try {
+    speechSynthesis.cancel();
+    list.forEach(text => { const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = rate; if (enVoice) u.voice = enVoice; speechSynthesis.speak(u); });
+  } catch (e) {}
+}
+/* say a word, a line, or a list of pieces (syllables then the whole word) */
+function say(text, rate = 0.85) {
+  stopAudio();
+  const list = Array.isArray(text) ? text : [text];
+  if (TTS) {
+    const r = Math.max(0.7, Math.min(1.5, rate));
+    TTS.speak(list.map(t => ({ text: t, language: "en" })), { rate: r }).catch(e => { if (e && (e.code === "not_granted" || e.code === "unavailable")) { TTS = null; } if (hasSynth && e && e.code !== "viewer_stopped") synthSay(list, rate); });
+    return;
+  }
+  if (hasSynth) synthSay(list, rate);
+}
+const canSpeak = () => !!TTS || hasSynth;
+
+/* ---------- song audio: the YouTube player, kept visible above the lesson ---------- */
+let YTP = null, ytApiReady = false, ytVideo = null, audioReady = false, audioSongId = null, pendingSong = null;
+let play = { stopAt: null, loops: 0, from: 0, timer: null, onTick: null, onEnd: null, btn: null };
+window.onYouTubeIframeAPIReady = () => { ytApiReady = true; if (pendingSong) ensurePlayer(pendingSong); };
+function loadYTApi() { if (document.getElementById("ytapi")) return; const s = document.createElement("script"); s.id = "ytapi"; s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s); }
+function ytId(url) {
+  const m = String(url || "").trim().match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/) || String(url || "").trim().match(/^([A-Za-z0-9_-]{11})$/);
+  return m ? m[1] : null;
+}
+function ensurePlayer(song, onReady) {
+  if (!song || !song.videoId) { audioReady = false; return; }
+  loadYTApi();
+  if (!ytApiReady || !window.YT || !YT.Player) { pendingSong = song; return; }
+  pendingSong = null;
+  if (YTP && ytVideo === song.videoId) { audioSongId = song.id; if (onReady) onReady(); return; }
+  if (YTP && YTP.cueVideoById) { YTP.cueVideoById(song.videoId); ytVideo = song.videoId; audioSongId = song.id; audioReady = true; if (onReady) onReady(); return; }
+  ytVideo = song.videoId;
+  YTP = new YT.Player("yt", {
+    videoId: song.videoId, width: "100%", height: "100%",
+    playerVars: { playsinline: 1, rel: 0, controls: 1, disablekb: 1 },
+    events: { onReady: () => { audioReady = true; audioSongId = song.id; if (onReady) onReady(); if (VIEW === "home" && !SES) renderHome(); }, onError: () => { audioReady = false; } }
+  });
+}
+function showPlayer(on) { const b = document.getElementById("ytbox"); if (b) b.hidden = !on; if (!on) stopAudio(); }
+function curTime() { try { return (YTP && YTP.getCurrentTime && YTP.getCurrentTime()) || 0; } catch (e) { return 0; } }
+function ytPause() { try { if (YTP && YTP.pauseVideo) YTP.pauseVideo(); } catch (e) {} }
+function ytPlay() { try { if (YTP && YTP.playVideo) YTP.playVideo(); } catch (e) {} }
+function stopAudio() {
+  if (play.timer) { clearInterval(play.timer); play.timer = null; }
+  if (play.stopAt != null) ytPause();
+  const end = play.onEnd; const b = play.btn;
+  play = { stopAt: null, loops: 0, from: 0, timer: null, onTick: null, onEnd: null, btn: null };
+  if (b) b.classList.remove("on");
+  if (end) end();
+}
+function playRange(from, to, opts = {}) {
+  if (!audioReady || !YTP || !YTP.seekTo) return false;
+  stopAudio(); if (hasSynth) { try { speechSynthesis.cancel(); } catch (e) {} }
+  play.from = from; play.stopAt = to; play.loops = opts.loops || 1; play.onTick = opts.onTick || null; play.onEnd = opts.onEnd || null; play.btn = opts.btn || null;
+  if (play.btn) play.btn.classList.add("on");
+  try { YTP.setPlaybackRate(opts.rate || 1); YTP.seekTo(from, true); YTP.playVideo(); } catch (e) { return false; }
+  play.timer = setInterval(() => {
+    const t = curTime();
+    if (play.onTick) play.onTick((t - play.from) / Math.max(0.1, play.stopAt - play.from));
+    if (t >= play.stopAt - 0.03) {
+      if (play.loops > 1) { play.loops--; try { YTP.seekTo(play.from, true); YTP.playVideo(); } catch (e) {} }
+      else stopAudio();
+    }
+  }, 40);
+  return true;
+}
+async function loadAudioFor(song) { ensurePlayer(song); }
+const RAWC = new WeakMap();
+function rawInfo(song) { let v = RAWC.get(song); if (!v || v.src !== song.raw) { v = parseLyrics(song.raw || ""); v.src = song.raw; RAWC.set(song, v); } return v; }
+function lineSpan(song, idx) {
+  const own = song.spans && song.spans[idx];
+  if (own) { const adj = (song.adj && song.adj[idx]) || 0, off = song.offset || 0; return { start: Math.max(0, own.start + adj + off), end: own.end + off }; }
+  const times = song.times || []; if (!times.length) return null;
+  const info = rawInfo(song);
+  const r = info.firstRaw[idx]; if (r == null || times[r] == null) return null;
+  const adj = (song.adj && song.adj[idx]) || 0;
+  const start = Math.max(0, times[r] + adj);
+  let end = times[r + 1] != null ? times[r + 1] : (song.tEnd || times[r] + 6);
+  end = Math.min(end + 0.15, start + 14);
+  return end > start + 0.3 ? { start, end } : null;
+}
+function searchFrom(song, idx) {
+  for (let i = idx - 1; i >= 0; i--) { const sp = lineSpan(song, i); if (sp) return Math.max(0, sp.end - 1); }
+  return 0;
+}
+function playLine(idx, opts = {}) { const s = curSongForAudio(); if (!s || audioSongId !== s.id) return false; const sp = lineSpan(s, idx); if (!sp) return false; return playRange(sp.start, sp.end, opts); }
+function curSongForAudio() { return SES ? S.songs[SES.sid] : curSong(); }
+function hasLineAudio(idx) { const s = curSongForAudio(); return !!(s && audioReady && audioSongId === s.id && lineSpan(s, idx)); }
+/* buttons: play line from the song (or voice if no song audio), slow, ×3 */
+function lineButtons(idx, text) {
+  const fromSong = hasLineAudio(idx);
+  if (!fromSong && !canSpeak()) return "";
+  return `<div class="audiorow">
+    <button class="speak" data-line="${idx}" data-rate="1" data-text="${esc(text)}">${fromSong ? ICON_PLAY + "Рядок з пісні" : ICON_SPEAK + "Голосом"}</button>
+    <button class="speak" data-line="${idx}" data-rate="${fromSong ? 0.75 : 0.6}" data-text="${esc(text)}">Повільно</button>
+    ${fromSong ? `<button class="speak" data-line="${idx}" data-rate="1" data-loops="3" data-text="${esc(text)}">×3</button>` : ""}
+  </div>`;
+}
+function wireAudio(root = app, karaoke) {
+  root.querySelectorAll("[data-line]").forEach(b => b.onclick = () => {
+    const idx = Number(b.dataset.line), rate = Number(b.dataset.rate) || 1, loops = Number(b.dataset.loops) || 1;
+    if (play.btn === b) { stopAudio(); return; }
+    if (!playLine(idx, { rate, loops, btn: b, onTick: karaoke, onEnd: () => karaoke && karaoke(-1) })) say(b.dataset.text, rate === 1 ? 0.85 : rate);
+  });
+  root.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say, b.dataset.rate ? Number(b.dataset.rate) : 0.85));
+}
+function karaokeFor(el) {
+  const spans = el ? [...el.querySelectorAll(".kw")] : [];
+  const lens = spans.map(s => s.textContent.length + 1); const tot = lens.reduce((a, b) => a + b, 0) || 1;
+  let acc = 0; const starts = lens.map(n => { const v = acc / tot; acc += n; return v; });
+  return f => { spans.forEach((s, i) => s.classList.toggle("on", f >= 0 && starts[i] <= f * 0.92 + 0.07)); };
+}
+const kwHtml = text => splitLine(text).map((p, i) => i % 2 === 1 ? `<span class="kw">${esc(p)}</span>` : esc(p)).join("");
+
+/* ---------- speech in (dictation capability, then browser API) ---------- */
+let dictHandlers = { partial: null, final: null, state: null };
+function wireDictation(d) {
+  d.onPartial(e => dictHandlers.partial && dictHandlers.partial(e.text));
+  d.onFinal(e => dictHandlers.final && dictHandlers.final(e.text));
+  d.onState(e => dictHandlers.state && dictHandlers.state(e.state, e.reason));
+}
+const BrowserSR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+/* ---------- lyrics → song ---------- */
+function parseLyrics(raw) {
+  const rawLines = String(raw || "").split(/\r?\n/).map(l => l.replace(/\[\d{1,3}:\d{2}(?:[.:]\d{1,3})?\]/g, "").replace(/\s+/g, " ").trim())
+    .filter(l => l && !/^\[.*\]$/.test(l) && !/^(verse|chorus|bridge|intro|outro|pre-?chorus|hook|refrain|приспів|куплет)\b[^a-z]*\d*\s*:?\s*$/i.test(l) && toks(l).length > 0);
+  const total = rawLines.reduce((n, l) => n + toks(l).length, 0);
+  const seen = new Map(); const lines = []; const firstRaw = []; const rawToLesson = [];
+  rawLines.forEach((l, r) => { const k = norm(l); if (seen.has(k)) { lines[seen.get(k)].rep++; rawToLesson.push(seen.get(k)); } else { seen.set(k, lines.length); rawToLesson.push(lines.length); firstRaw.push(r); lines.push({ en: l, ua: "", note: "", words: [], rep: 1 }); } });
+  const uniq = [...new Set(rawLines.flatMap(toks))];
+  const avgLen = uniq.reduce((n, w) => n + w.length, 0) / Math.max(1, uniq.length);
+  const longShare = uniq.filter(w => w.length >= 7).length / Math.max(1, uniq.length);
+  const wpl = total / Math.max(1, rawLines.length);
+  const score = 1 + uniq.length / 70 + longShare * 5 + Math.max(0, wpl - 5) / 3 + Math.max(0, avgLen - 4.2);
+  const diff = Math.max(1, Math.min(5, Math.round(score)));
+  return { rawLines, firstRaw, rawToLesson, rawCount: rawLines.length, total, uniq, lines, diff, wpl: Math.round(wpl * 10) / 10 };
+}
+/* synced lyrics (LRC): "[00:12.34] text" → start/end of every lesson line, no tapping */
+function parseLRC(raw) {
+  const out = [];
+  String(raw || "").split(/\r?\n/).forEach(l => {
+    const tags = [...l.matchAll(/\[(\d{1,3}):(\d{2})(?:[.:](\d{1,3}))?\]/g)]; if (!tags.length) return;
+    const text = l.replace(/\[[^\]]*\]/g, "").replace(/\s+/g, " ").trim();
+    tags.forEach(m => out.push({ t: Number(m[1]) * 60 + Number(m[2]) + (m[3] ? Number("0." + m[3]) : 0), text }));
+  });
+  return out.sort((a, b) => a.t - b.t);
+}
+function spansFromLRC(song, raw) {
+  const ev = parseLRC(raw); if (ev.length < 2) return 0;
+  const spans = {}; let n = 0;
+  song.lines.forEach((l, i) => {
+    const k = norm(l.en); const j = ev.findIndex(e => e.text && norm(e.text) === k); if (j < 0) return;
+    const start = ev[j].t, nx = ev.slice(j + 1).find(e => e.t > start + 0.3);
+    spans[i] = { start: Math.max(0, start - 0.15), end: Math.min(nx ? nx.t : start + 6, start + 15) }; n++;
+  });
+  if (n) { song.spans = Object.assign(song.spans || {}, spans); song.adj = {}; }
+  return n;
+}
+function autoWords(line, chosen) {
+  return [...new Set(toks(line.en))].filter(w => !STOP.has(w) && !chosen.has(w) && w.length > 2)
+    .sort((a, b) => b.length - a.length).slice(0, 2).map(w => ({ w, ua: "", say: "" }));
+}
+function buildPrompt(song, from, to, chosen) {
+  const list = song.lines.slice(from, to).map((l, k) => (from + k) + ". " + l.en).join("\n");
+  return `Ти вчитель англійської для україномовного учня з нульовим рівнем. Пісня: ${song.artist} — ${song.title}. Нижче нумеровані рядки її тексту, які учень сам вставив для особистого навчання.
+Для КОЖНОГО рядка поверни:
+- "i": номер рядка;
+- "ua": природний переклад українською, близький до змісту;
+- "note": коротке пояснення простими словами (до 20 слів), якщо є сленг, ідіома, скорочення (gonna, ain't, 'cause) або прихований зміст; інакше "";
+- "words": 1–3 найкорисніші для новачка слова з цього рядка, написані точно як у рядку, малими літерами. Не бери слова, які вже вибрані: ${chosen.size ? [...chosen].join(", ") : "(поки нічого)"}. Не бери артиклі й займенники (a, the, i, you, it), якщо в рядку є кращі слова. Для кожного слова: "w"; "ua" (переклад 1–3 слова саме в значенні з цього рядка); "say" (вимова українськими літерами, наголошений склад ВЕЛИКИМИ, напр. "кем-ПОУ-жер"); "parts" — склади для вимови, кожен як {"en":"com","ua":"кем"} (для односкладового слова один елемент).
+Відповідай лише JSON без пояснень і без markdown:
+{"lines":[{"i":0,"ua":"...","note":"","words":[{"w":"...","ua":"...","say":"...","parts":[{"en":"...","ua":"..."}]}]}]}
+
+Рядки:
+${list}`;
+}
+function cleanParts(w, parts) {
+  if (!Array.isArray(parts)) return null;
+  const p = parts.map(x => ({ en: String((x && x.en) || "").toLowerCase().replace(/[^a-z']/g, "").slice(0, 12), ua: String((x && x.ua) || "").slice(0, 12) })).filter(x => x.en);
+  return p.length && p.map(x => x.en).join("").replace(/'/g, "") === w.replace(/'/g, "") ? p : null;
+}
+function applyAI(song, data, chosen) {
+  const arr = data && Array.isArray(data.lines) ? data.lines : [];
+  let n = 0;
+  arr.forEach(r => {
+    const i = Number(r && r.i); const line = song.lines[i]; if (!line) return;
+    line.ua = String(r.ua || "").slice(0, 300); line.note = String(r.note || "").slice(0, 300);
+    const lt = new Set(toks(line.en));
+    const ws = (Array.isArray(r.words) ? r.words : []).map(x => { const w = toks(x && x.w)[0] || ""; return { w, ua: String((x && x.ua) || "").slice(0, 60), say: String((x && x.say) || "").slice(0, 40), parts: cleanParts(w, x && x.parts) }; })
+      .filter(x => x.w && lt.has(x.w) && !chosen.has(x.w)).slice(0, 3);
+    ws.forEach(x => chosen.add(x.w));
+    line.words = ws; n++;
+  });
+  return n;
+}
+function fillMissingWords(song) {
+  const chosen = new Set(song.lines.flatMap(l => l.words.map(w => w.w)));
+  song.lines.forEach(l => { if (!l.words.length) { l.words = autoWords(l, chosen); l.words.forEach(w => chosen.add(w.w)); } });
+}
+
+/* ---------- progress math ---------- */
+function songPct(song) {
+  if (!song || !song.uniq.length) return 0;
+  let tw = 0, kw = 0;
+  song.uniq.forEach(w => { const wt = weight(w); tw += wt; kw += wt * wordCredit(song, w); });
+  const lineSum = song.lines.reduce((n, l, i) => { const lp = song.lp[i]; return n + (lp && (lp.lastAcc || 0) >= 0.75 ? Math.min(1, lp.micBest || 0) : 0); }, 0);
+  return 75 * kw / tw + 25 * lineSum / song.lines.length;
+}
+/* stage 1 = got it right today; real credit starts when you recall it on a later day */
+function wordCredit(song, w) {
+  const r = S.words[wkey(song.id, w)];
+  const srsC = r && r.stage >= 2 ? Math.min(1, (r.stage - 1) / 4) : 0;
+  return Math.max(srsC, Math.min(0.1, song.ws[w] || 0));
+}
+function bumpWord(song, w, d) { song.ws[w] = Math.max(0, Math.min(1, (song.ws[w] || 0) + d)); }
+const wkey = (sid, w) => sid + "|" + w;
+function srs(sid, wobj, ok, lineIdx, soon) {
+  const k = wkey(sid, wobj.w);
+  let r = S.words[k];
+  if (!r) r = S.words[k] = { song: sid, w: wobj.w, ua: wobj.ua, say: wobj.say, line: lineIdx, stage: 0, due: 0, right: 0, wrong: 0 };
+  if (ok) { r.stage = Math.min(INTERVALS.length, r.stage + 1); r.right++; r.due = Date.now() + (soon ? 1 : INTERVALS[r.stage - 1]) * DAY - 3600000; }
+  else { r.stage = Math.max(0, r.stage - 1); r.wrong++; r.due = Date.now() + DAY - 3600000; }
+  const song = S.songs[sid];
+  if (song) { if (ok) song.ws[wobj.w] = Math.max(song.ws[wobj.w] || 0, Math.min(1, r.stage / 4)); else bumpWord(song, wobj.w, -0.1); }
+}
+function dueWords() { const now = Date.now(); return Object.values(S.words).filter(r => r.due <= now && S.songs[r.song]).sort((a, b) => a.due - b.due); }
+function bumpStreak() {
+  const today = ymd(Date.now()), yest = ymd(Date.now() - DAY);
+  if (S.streak.last === today) return;
+  S.streak.n = S.streak.last === yest ? S.streak.n + 1 : 1; S.streak.last = today;
+}
+function streakNow() { const t = ymd(Date.now()), y = ymd(Date.now() - DAY); return (S.streak.last === t || S.streak.last === y) ? S.streak.n : 0; }
+function wordObj(song, w) { for (const l of song.lines) for (const x of l.words) if (x.w === w) return x; const r = S.words[wkey(song.id, w)]; return r ? { w: r.w, ua: r.ua, say: r.say } : { w, ua: "", say: "" }; }
+
+/* ---------- action bar ---------- */
+function setBar(html, tone) { barin.innerHTML = html; bar.className = "actionbar" + (tone ? " " + tone : ""); bar.hidden = false; }
+function hideBar() { bar.hidden = true; barin.innerHTML = ""; }
+
+/* ---------- routing ---------- */
+function route() { stopListening(); stopAudio(); stopKaraoke(); showPlayer(false); SES = null; const s = curSong(); if (!s || !s.ready) renderSetup(); else { renderHome(); loadAudioFor(s); } window.scrollTo(0, 0); }
+
+/* ---------- add a song: synced lyrics from lrclib + a YouTube link ---------- */
+let ADD = null;
+function renderSetup(errMsg) {
+  VIEW = "setup"; hideBar(); showPlayer(false);
+  if (!ADD) ADD = { q: Object.keys(S.songs).length ? "" : "Tame Impala Loser", results: null, pick: null, err: "" };
+  const hasSongs = Object.values(S.songs).some(x => x.ready);
+  app.innerHTML = `
+  <div class="topbar"><div class="brand">Рядок <span>за</span> рядком</div>${hasSongs ? '<button class="linkbtn" id="back">Назад</button>' : ""}</div>
+  <div class="stack"><h1>Нова пісня</h1><p class="muted">Вчимо англійську через пісню, яку ти вже знаєш. Текст з часом для кожного рядка сайт знаходить сам, а звук бере з YouTube.</p></div>
+  ${errMsg ? `<div class="warn">${esc(errMsg)}</div>` : ""}
+  <div class="card">
+    <span class="label">1. Знайди пісню</span>
+    <div class="row" style="flex-wrap:nowrap"><input type="text" id="q" value="${esc(ADD.q)}" placeholder="виконавець і назва" autocomplete="off"><button class="btn sm" id="find">Знайти</button></div>
+    <div id="results" class="opts">${resultsHtml()}</div>
+    <details><summary>Не знаходить? Встав текст з часом сам</summary>
+      <div class="stack small" style="margin-top:8px"><p class="muted">На сайті <b>lrclib.net</b> знайди пісню, відкрий її, скопіюй блок <b>Synced lyrics</b> (кожен рядок починається з часу, наприклад [00:21.40]) і встав сюди.</p>
+      <div class="two"><input type="text" id="partist" placeholder="виконавець"><input type="text" id="ptitle" placeholder="назва"></div>
+      <textarea id="lrcpaste" style="min-height:110px" placeholder="[00:21.40] перший рядок…"></textarea><button class="btn ghost sm" id="usepaste">Використати цей текст</button></div>
+    </details>
+  </div>
+  <div class="card" id="step2" ${ADD.pick ? "" : "hidden"}>
+    <span class="label">2. Звук з YouTube</span>
+    ${ADD.pick ? `<div class="okbox"><b>${esc(ADD.pick.title)}</b> — ${esc(ADD.pick.artist)}. Рядків з часом: ${parseLRC(ADD.pick.lrc).filter(e => e.text).length}.</div>` : ""}
+    <p class="small muted">Відкрий пошук, знайди відео пісні, скопіюй посилання і встав сюди. Найкраще підходить відео з назвою <b>Official Audio</b> або альбомна версія: час рядків зроблено під неї. У кліпі часто інше інтро.</p>
+    ${ADD.pick ? `<a class="btn ghost sm" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ADD.pick.artist + " " + ADD.pick.title + " official audio")}" target="_blank" rel="noopener">Відкрити пошук на YouTube</a>` : ""}
+    <input type="text" id="ytlink" placeholder="https://youtu.be/…" autocomplete="off">
+    <button class="btn" id="create">Готово, далі</button>
+    <button class="linkbtn" id="novideo" style="align-self:flex-start">Без відео (тільки синтезований голос)</button>
+  </div>
+  <div id="manual"></div>`;
+  const back = document.getElementById("back"); if (back) back.onclick = () => { ADD = null; route(); };
+  const q = document.getElementById("q");
+  const doFind = async () => {
+    ADD.q = q.value.trim(); if (!ADD.q) { q.focus(); return; }
+    const box = document.getElementById("results"); box.innerHTML = `<p class="muted small">Шукаю…</p>`;
+    try {
+      const r = await fetch("https://lrclib.net/api/search?q=" + encodeURIComponent(ADD.q));
+      if (!r.ok) throw new Error("http " + r.status);
+      const list = await r.json();
+      ADD.results = (Array.isArray(list) ? list : []).filter(x => x && x.syncedLyrics).slice(0, 8);
+      ADD.err = ADD.results.length ? "" : "Не знайшов цю пісню з текстом по часу. Спробуй інше написання або встав текст сам (нижче).";
+    } catch (e) { ADD.results = []; ADD.err = "Не вдалося підключитися до бази текстів. Встав текст сам (нижче)."; }
+    box.innerHTML = resultsHtml(); wireResults();
+  };
+  document.getElementById("find").onclick = doFind;
+  q.addEventListener("keydown", e => { if (e.key === "Enter") doFind(); });
+  wireResults();
+  document.getElementById("usepaste").onclick = () => {
+    const lrc = document.getElementById("lrcpaste").value;
+    if (parseLRC(lrc).filter(e => e.text).length < 2) { renderSetup("У вставленому тексті немає рядків з часом. Потрібні саме Synced lyrics, де рядок починається з [хв:сек]."); return; }
+    ADD.pick = { artist: document.getElementById("partist").value.trim() || "Виконавець", title: document.getElementById("ptitle").value.trim() || "Пісня", album: "", duration: 0, lrc };
+    renderSetup(); document.getElementById("step2").scrollIntoView({ behavior: "smooth" });
+  };
+  const create = videoId => {
+    const p = ADD.pick; const parsed = parseLyrics(p.lrc);
+    if (parsed.lines.length < 2) { renderSetup("Замало рядків у тексті пісні."); return; }
+    const id = "s" + Date.now().toString(36);
+    const song = { id, artist: p.artist, title: p.title, raw: p.lrc, lines: parsed.lines, total: parsed.total, uniq: parsed.uniq, diff: parsed.diff, wpl: parsed.wpl, rawCount: parsed.rawCount,
+      ws: {}, lp: {}, next: 0, ready: false, created: Date.now(), spans: {}, adj: {}, videoId: videoId || null, offset: 0, duration: p.duration || 0 };
+    spansFromLRC(song, song.raw);
+    renderTranslate(song);
+  };
+  document.getElementById("create").onclick = () => {
+    const v = ytId(document.getElementById("ytlink").value);
+    if (!v) { const i = document.getElementById("ytlink"); i.focus(); i.classList.add("hinted"); setTimeout(() => i.classList.remove("hinted"), 600); return; }
+    create(v);
+  };
+  document.getElementById("novideo").onclick = () => create(null);
+}
+function resultsHtml() {
+  if (!ADD || ADD.results == null) return "";
+  if (ADD.err) return `<div class="warn small">${esc(ADD.err)}</div>`;
+  return ADD.results.map((x, i) => `<button class="opt ${ADD.pick && ADD.pick.id === x.id ? "ok" : ""}" data-r="${i}"><span style="display:block">${esc(x.trackName)} — ${esc(x.artistName)}</span><span class="small muted" style="font-weight:700">${esc(x.albumName || "")}${x.duration ? " · " + fmtTime(x.duration) : ""}</span></button>`).join("");
+}
+function wireResults() {
+  app.querySelectorAll("[data-r]").forEach(b => b.onclick = () => {
+    const x = ADD.results[Number(b.dataset.r)];
+    ADD.pick = { id: x.id, artist: x.artistName, title: x.trackName, album: x.albumName || "", duration: x.duration || 0, lrc: x.syncedLyrics };
+    renderSetup(); document.getElementById("step2").scrollIntoView({ behavior: "smooth" });
+  });
+}
+
+/* ---------- translation: Claude API key if the learner added one, otherwise copy a prompt into any AI chat ---------- */
+function renderTranslate(song, later) {
+  VIEW = "setup"; hideBar(); showPlayer(false);
+  const keep = later ? song.lines.map((l, i) => (song.lp[i] && song.lp[i].sessions) ? l.words.slice() : null) : null;
+  const done = () => {
+    if (keep) song.lines.forEach((l, i) => { if (keep[i]) { const fresh = l.words; l.words = keep[i].map(w => { const f = fresh.find(x => x.w === w.w); return f ? Object.assign({}, w, { ua: f.ua || w.ua, say: f.say || w.say }) : w; }); } });
+    finishSong(song);
+  };
+  app.innerHTML = `
+  <div class="topbar"><div class="brand">Рядок <span>за</span> рядком</div></div>
+  <div class="stack"><h1>Переклад</h1><p class="muted">${esc(song.artist)} — ${esc(song.title)}: ${song.lines.length} рядків для уроків, ${song.total} слів. ШІ перекладе кожен рядок, пояснить сленг і вибере 1–3 слова з рядка.</p></div>
+  <div class="card">
+    ${SAMPLE ? `<button class="btn" id="ai">Перекласти через ШІ (ключ API)</button>` : `<p class="small muted">Найпростіше: скопіюй запит у свій чат з Claude чи ChatGPT і встав відповідь. Або додай ключ Claude API в налаштуваннях, і переклад буде в один тап.</p>`}
+    <button class="btn ghost" id="manualbtn">Через чат з ШІ (скопіювати запит)</button>
+    <button class="linkbtn" id="skip" style="align-self:flex-start">${later ? "Скасувати" : "Пропустити, перекласти пізніше"}</button>
+  </div>
+  <div id="manual"></div>`;
+  document.getElementById("skip").onclick = () => { if (later) route(); else finishSong(song); };
+  document.getElementById("manualbtn").onclick = () => showManual(song, "", done);
+  const ai = document.getElementById("ai");
+  if (ai) ai.onclick = async () => {
+    ai.disabled = true; const chosen = new Set(); const CH = 10;
+    try {
+      for (let from = 0; from < song.lines.length; from += CH) {
+        const to = Math.min(song.lines.length, from + CH);
+        ai.textContent = `Перекладаю рядки ${from + 1}–${to} з ${song.lines.length}…`;
+        applyAI(song, await SAMPLE.json(buildPrompt(song, from, to, chosen), { modelTier: "default" }), chosen);
+      }
+      done();
+    } catch (e) {
+      ai.disabled = false; ai.textContent = "Перекласти через ШІ (ключ API)";
+      showManual(song, e && e.code === "not_granted" ? "Ключ API не підійшов. Перевір його в налаштуваннях або скористайся чатом." : "Не вдалося отримати переклад. Спробуй ще раз або через чат.", done);
+    }
+  };
+}
+function showManual(song, msg, done) {
+  const box = document.getElementById("manual");
+  const prompt = buildPrompt(song, 0, song.lines.length, new Set());
+  box.innerHTML = `<div class="card">
+    ${msg ? `<div class="warn">${esc(msg)}</div>` : ""}
+    <h2>Переклад через чат з ШІ</h2>
+    <ol class="steps small"><li>Скопіюй запит кнопкою нижче.</li><li>Встав його в Claude або ChatGPT.</li><li>Скопіюй відповідь і встав у поле нижче.</li></ol>
+    <div class="mono" id="ptext">${esc(prompt)}</div>
+    <button class="btn ghost" id="copyp">Скопіювати запит</button>
+    <textarea id="aians" placeholder="Встав сюди відповідь ШІ (текст, що починається з {&quot;lines&quot;)" style="min-height:120px"></textarea>
+    <button class="btn" id="useans">Готово, створити уроки</button>
+  </div>`;
+  document.getElementById("copyp").onclick = async () => {
+    const b = document.getElementById("copyp");
+    try { await navigator.clipboard.writeText(prompt); b.textContent = "Скопійовано"; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById("ptext")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = "Виділив текст, скопіюй вручну"; }
+  };
+  document.getElementById("useans").onclick = () => {
+    const t = document.getElementById("aians").value; const a = t.indexOf("{"), z = t.lastIndexOf("}");
+    let data = null; try { data = JSON.parse(t.slice(a, z + 1)); } catch (e) {}
+    const n = data ? applyAI(song, data, new Set()) : 0;
+    if (!n) { showManual(song, "Не розпізнав відповідь. Скопіюй її повністю, разом з фігурними дужками.", done); return; }
+    done();
+  };
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function finishSong(song) {
+  fillMissingWords(song);
+  song.ready = true;
+  S.songs[song.id] = song; S.cur = song.id; ADD = null; save(); route();
+}
+
+/* ---------- home ---------- */
+function audioCardHtml(s) {
+  if (!s.videoId) return `<div class="card"><h3>Звук пісні</h3><p class="small muted">Додай посилання на відео пісні з YouTube, щоб рядки звучали голосом виконавця і працював караоке-режим. Найкраще «Official Audio».</p>
+    <a class="btn ghost sm" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.artist + " " + s.title + " official audio")}" target="_blank" rel="noopener">Відкрити пошук на YouTube</a>
+    <div class="row" style="flex-wrap:nowrap"><input type="text" id="ytlink" placeholder="https://youtu.be/…"><button class="btn sm" id="setyt">Додати</button></div></div>`;
+  const off = s.offset || 0;
+  return `<div class="card"><details><summary>Синхронізація тексту з піснею</summary>
+    <div class="stack small" style="margin-top:8px">
+      <p class="muted">Якщо підсвітка поспішає чи запізнюється, підсунь текст і перевір на першому рядку. Зараз: <b id="offv">${off > 0 ? "+" : ""}${off.toFixed(1).replace(".", ",")} с</b></p>
+      <div class="row"><button class="btn ghost sm" id="offm">Текст раніше −0,5 с</button><button class="btn ghost sm" id="offp">Текст пізніше +0,5 с</button></div>
+      <button class="btn ghost sm" id="offtest">Перевірити на першому рядку</button>
+      <div class="row" style="flex-wrap:nowrap"><input type="text" id="ytlink" placeholder="інше відео: https://youtu.be/…"><button class="btn ghost sm" id="setyt">Змінити</button></div>
+    </div></details></div>`;
+}
+function wireAudioCard(s) {
+  const set = document.getElementById("setyt");
+  if (set) set.onclick = () => { const v = ytId(document.getElementById("ytlink").value); if (!v) { document.getElementById("ytlink").focus(); return; } s.videoId = v; s.offset = 0; save(); ensurePlayer(s); renderHome(); };
+  const upd = d => { s.offset = Math.round(((s.offset || 0) + d) * 10) / 10; save(); const v = document.getElementById("offv"); if (v) v.textContent = (s.offset > 0 ? "+" : "") + s.offset.toFixed(1).replace(".", ",") + " с"; };
+  const m = document.getElementById("offm"), p = document.getElementById("offp"), t = document.getElementById("offtest");
+  if (m) m.onclick = () => upd(-0.5); if (p) p.onclick = () => upd(0.5);
+  if (t) t.onclick = () => {
+    showPlayer(true); ensurePlayer(s, () => { const i = s.lines.findIndex((l, k) => lineSpan(s, k)); if (i >= 0) { const sp = lineSpan(s, i); playRange(sp.start, sp.end); } });
+    document.getElementById("ytbox").scrollIntoView({ behavior: "smooth" });
+  };
+}
+function renderHome() {
+  VIEW = "home"; hideBar(); if (!KAR) showPlayer(false);
+  const s = curSong();
+  const pct = songPct(s);
+  const learned = Object.values(S.words).filter(r => r.song === s.id && r.stage >= 1).length;
+  const sung = s.lines.filter((l, i) => s.lp[i] && s.lp[i].best >= 0.7).length;
+  const due = dueWords().length;
+  const doneAll = s.next >= s.lines.length;
+  const myWords = Object.values(S.words).filter(r => r.song === s.id).sort((a, b) => a.line - b.line);
+  const q = encodeURIComponent(s.artist + " " + s.title);
+  app.innerHTML = `
+  <div class="topbar"><div class="brand">Рядок <span>за</span> рядком</div><button class="btn ghost sm" id="addsong">+ Пісня</button></div>
+  ${Object.values(S.songs).filter(x => x.ready).length > 1 ? `<div class="chips">${Object.values(S.songs).filter(x => x.ready).map(x => `<button class="chip ${x.id === s.id ? "chipon" : ""}" data-song="${x.id}">${esc(x.title)}</button>`).join("")}</div>` : ""}
+  <div class="card">
+    <div class="hero">
+      <div class="disc" style="--p:${Math.max(0.6, pct).toFixed(2)}" aria-hidden="true"></div>
+      <div class="stack" style="gap:6px;min-width:0">
+        <span class="label">Пісню вивчено</span>
+        <div class="pct">${fmtPct(pct)}<small>%</small></div>
+        <div class="songname">${esc(s.artist)} — ${esc(s.title)}</div>
+      </div>
+    </div>
+    <div class="facts">
+      <span class="fact">${s.total} слів</span><span class="fact">${s.uniq.length} різних</span><span class="fact">${s.lines.length} рядків</span><span class="fact">складність ${s.diff}/5</span>
+    </div>
+  </div>
+  <button class="btn sun" id="go">${doneAll ? "Тренувати найслабший рядок" : (s.lp[s.next] && s.lp[s.next].sessions ? `Повторити рядок ${s.next + 1} (було ${Math.round((s.lp[s.next].lastAcc || 0) * 100)}%)` : `Почати рядок ${s.next + 1} з ${s.lines.length}`)}</button>
+  ${s.videoId ? `<button class="btn" id="karaoke">Караоке: вся пісня з пропусками</button>` : ""}
+  <p class="lessons-left">Урок ≈ 6 хвилин: рядок з пісні, слова, збери рядок, пропуски, спів${due ? ` і ${due} ${plural(due, "слово", "слова", "слів")} на повторення` : ""}.</p>
+  ${audioCardHtml(s)}
+  <div class="stats">
+    <div class="stat"><b>${learned}</b><span>слів вивчено</span></div>
+    <div class="stat"><b>${sung}</b><span>рядків заспівано</span></div>
+    <div class="stat"><b>${streakNow()}</b><span>${plural(streakNow(), "день", "дні", "днів")} поспіль</span></div>
+    <div class="stat"><b>${due}</b><span>на повторення</span></div>
+  </div>
+  <div class="card">
+    <details>
+      <summary>Усі рядки (${Math.min(s.next + 1, s.lines.length)} з ${s.lines.length} відкрито)</summary>
+      <div class="wordlist" style="margin-top:8px">
+        ${s.lines.map((l, i) => { const lp = s.lp[i]; const open = i <= s.next; const acc = lp && lp.sessions ? Math.round((lp.lastAcc || 0) * 100) : null;
+          return `<div class="wordrow" style="align-items:center"><div style="min-width:0"><span class="muted">${i + 1}.</span> ${esc(l.en)}${acc != null ? ` <span class="badge ${acc >= 75 ? "on" : ""}">${acc}%</span>` : ""}</div>${open ? `<button class="btn ghost sm" data-redo="${i}">${lp && lp.sessions ? "Ще раз" : "Почати"}</button>` : `<span class="muted small">закрито</span>`}</div>`; }).join("")}
+      </div>
+    </details>
+  </div>
+  <div class="card">
+    <details ${myWords.length && myWords.length <= 12 ? "open" : ""}>
+      <summary>Мої слова (${myWords.length})</summary>
+      <div class="wordlist" style="margin-top:8px">
+        ${myWords.length ? myWords.map(r => `<div class="wordrow"><div><button class="linkbtn" style="padding:0;text-decoration:none;color:var(--ink)" data-say="${esc(r.w)}">${esc(r.w)}</button> <span class="muted">${esc(r.ua)}</span></div><div class="dots" title="етап ${r.stage} з 5">${[1, 2, 3, 4, 5].map(i => `<i class="${r.stage >= i ? "f" : ""}"></i>`).join("")}</div></div>`).join("") : `<p class="muted small">Тут з'являться слова після першої сесії. Кожна зелена крапка означає, що ти згадав слово через довший проміжок: 1, 3, 7, 14 і 30 днів.</p>`}
+      </div>
+    </details>
+  </div>
+  <div class="card">
+    <h3>Послухати повністю</h3>
+    <div class="row"><a class="btn ghost sm" href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">YouTube</a><a class="btn ghost sm" href="https://open.spotify.com/search/${q}" target="_blank" rel="noopener">Spotify</a></div>
+  </div>
+  <div class="card">
+    <details>
+      <summary>Як це працює</summary>
+      <div class="stack small" style="margin-top:10px">
+        <p><b>Згадування.</b> Слово спершу впізнаєш, потім чуєш, потім збираєш у рядок і нарешті пишеш з пам'яті. Перевіряє сторінка, не ти сам.</p>
+        <p><b>Друга спроба.</b> Помилився в букві, сторінка покаже, де саме, і дасть ще раз. Помилки повертаються в кінці сесії.</p>
+        <p><b>Забування.</b> Слова повертаються через 1, 3, 7, 14 і 30 днів, саме тоді, коли вже трохи забулись.</p>
+        <p><b>Змішування.</b> Повторення беруться з різних рядків, а згодом і з різних пісень.</p>
+        <p><b>Зв'язок з відомим.</b> Попередній рядок повертається разом з новим, а наприкінці складаєш своє речення.</p>
+        <p><b>Відсоток пісні.</b> 75% дають слова (довші слова важать більше, «the» чи «you» менше), 25% дають рядки, які ти заспівав.</p>
+      </div>
+    </details>
+  </div>
+  <div class="card" id="settings">
+    <h3>Налаштування</h3>
+    <div class="row"><button class="btn ghost sm" id="edit">Оновити переклад</button><button class="btn ghost sm" id="reset">Скинути прогрес</button></div>
+    <div id="confirm"></div>
+    <details><summary>Ключ Claude API (необов'язково)</summary><div class="stack small" style="margin-top:8px"><p class="muted">З ключем переклад нової пісні і підбір варіантів відповідей роблються самі, в один тап. Ключ зберігається тільки в цьому браузері. Без ключа все теж працює через копіювання запиту в чат.</p><input type="text" id="apikey" placeholder="sk-ant-…" value="${getApiKey() ? "••••••••" : ""}" autocomplete="off"><div class="row"><button class="btn ghost sm" id="savekey">Зберегти ключ</button>${getApiKey() ? `<button class="btn ghost sm" id="delkey">Видалити ключ</button>` : ""}</div></div></details>
+  </div>`;
+  wireAudio(); wireAudioCard(s);
+  app.querySelectorAll("[data-redo]").forEach(b => b.onclick = () => startSession(Number(b.dataset.redo)));
+  document.getElementById("go").onclick = () => startSession();
+  document.getElementById("edit").onclick = () => renderTranslate(s, true);
+  document.getElementById("addsong").onclick = () => { ADD = null; renderSetup(); };
+  app.querySelectorAll("[data-song]").forEach(b => b.onclick = () => { S.cur = b.dataset.song; save(); route(); });
+  const kb = document.getElementById("karaoke"); if (kb) kb.onclick = () => renderKaraoke(s);
+  document.getElementById("savekey").onclick = () => { const v = document.getElementById("apikey").value.trim(); if (v && !v.startsWith("•")) { try { localStorage.setItem(KEYKEY, v); } catch (e) {} SAMPLE = makeSample(); renderHome(); } };
+  const dk = document.getElementById("delkey"); if (dk) dk.onclick = () => { try { localStorage.removeItem(KEYKEY); } catch (e) {} SAMPLE = null; renderHome(); };
+  document.getElementById("reset").onclick = () => {
+    document.getElementById("confirm").innerHTML = `<div class="warn stack"><p>Стерти весь прогрес по цій пісні? Текст пісні й розмітка залишаться.</p><div class="row"><button class="btn bad sm" id="yes">Так, стерти</button><button class="btn ghost sm" id="no">Ні</button></div></div>`;
+    document.getElementById("no").onclick = () => { document.getElementById("confirm").innerHTML = ""; };
+    document.getElementById("yes").onclick = () => {
+      s.ws = {}; s.lp = {}; s.next = 0;
+      Object.keys(S.words).forEach(k => { if (S.words[k].song === s.id) delete S.words[k]; });
+      save(); route();
+    };
+  };
+}
+function plural(n, one, few, many) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return one; if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few; return many; }
+
+/* ---------- karaoke: the whole song plays and stops at the end of a line until you type its missing words ---------- */
+let KAR = null;
+const KLEVELS = [{ k: 1, label: "1 слово" }, { k: 2, label: "2 слова" }, { k: 0.5, label: "Половина" }, { k: 99, label: "Весь рядок" }];
+function karaokeSeq(song) {
+  const ev = parseLRC(song.raw); const seq = [];
+  const idxOf = new Map(song.lines.map((l, i) => [norm(l.en), i]));
+  ev.forEach((e, j) => {
+    if (!e.text || !toks(e.text).length) return;
+    const nx = ev.slice(j + 1).find(x => x.t > e.t + 0.3);
+    seq.push({ t: e.t, end: Math.min(nx ? nx.t : e.t + 6, e.t + 15), text: e.text, li: idxOf.get(norm(e.text)) });
+  });
+  return seq;
+}
+function stopKaraoke() { if (KAR && KAR.timer) clearInterval(KAR.timer); if (KAR) ytPause(); KAR = null; }
+function renderKaraoke(song) {
+  stopListening(); stopAudio(); stopKaraoke(); SES = null; VIEW = "karaoke"; hideBar();
+  if (!song.videoId) { renderHome(); return; }
+  ensurePlayer(song); showPlayer(true);
+  const lvl = Math.max(0, Math.min(KLEVELS.length - 1, S.kLevel || 0));
+  const studied = new Set(Object.values(S.words).filter(r => r.song === song.id).map(r => r.w));
+  song.lines.forEach(l => l.words.forEach(w => studied.add(w.w)));
+  const seq = karaokeSeq(song);
+  seq.forEach(r => {
+    r.parts = splitLine(r.text); const n = toks(r.text).length; const L = KLEVELS[lvl].k;
+    r.gaps = pickGaps(r.parts, L === 99 ? n : L < 1 ? Math.ceil(n * L) : Math.min(L, n), studied);
+    r.res = {}; r.tries = {};
+  });
+  KAR = { song, seq, lvl, cur: -2, timer: null, waiting: false, started: false, right: 0, total: seq.reduce((n, r) => n + r.gaps.size, 0), finished: false };
+  app.innerHTML = `
+  <div class="lessonbar"><button class="x" id="quit" aria-label="Вийти">×</button><div class="track"><div id="kprog" style="width:0%"></div></div><span class="timer" id="kscore">0/${KAR.total}</span></div>
+  <div class="row" style="justify-content:space-between"><span class="kind">Караоке</span><div class="chips" id="klv">${KLEVELS.map((x, i) => `<button class="chip ${i === lvl ? "chipon" : ""}" data-l="${i}" style="padding:5px 10px;font-size:13px">${x.label}</button>`).join("")}</div></div>
+  <div class="card klyrics" id="klines" aria-live="polite"></div>
+  <p class="small muted">Пісня зупиниться в кінці рядка, поки не впишеш пропущене. Можна писати й поки рядок звучить. Enter перевіряє слово.</p>`;
+  document.getElementById("quit").onclick = () => { stopKaraoke(); route(); };
+  app.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { S.kLevel = Number(b.dataset.l); save(); renderKaraoke(song); });
+  drawKLines();
+  setBar(`<button class="btn sun" id="kstart">▶ Почати пісню</button>`);
+  document.getElementById("kstart").onclick = () => {
+    const start = () => {
+      KAR.started = true;
+      try { YTP.setPlaybackRate(1); YTP.seekTo(Math.max(0, (seq[0] ? seq[0].t : 0) + (song.offset || 0) - 3), true); YTP.playVideo(); } catch (e) {}
+      kNormalBar();
+      KAR.timer = setInterval(kTick, 60);
+    };
+    if (audioReady && audioSongId === song.id) start(); else ensurePlayer(song, start);
+  };
+}
+function kOpen(r) { return [...r.gaps].filter(i => !r.res[i]); }
+function kTick() {
+  if (!KAR) return;
+  const off = KAR.song.offset || 0, t = curTime() - off, seq = KAR.seq;
+  let cur = -1; for (let i = 0; i < seq.length; i++) { if (seq[i].t <= t + 0.05) cur = i; else break; }
+  if (KAR.waiting) return;
+  if (cur !== KAR.cur) {
+    const prev = KAR.seq[KAR.cur];
+    if (prev && kOpen(prev).length && cur === KAR.cur + 1) { ytPause(); kWait(); return; }
+    KAR.cur = cur; drawKLines();
+  }
+  const r = seq[KAR.cur];
+  if (r) {
+    const f = (t - r.t) / Math.max(0.3, r.end - r.t);
+    const spans = [...document.querySelectorAll("#kcur .kw")]; const lens = spans.map(s => (s.textContent || s.dataset.len || "x").length + 1); const tot = lens.reduce((a, b) => a + b, 0) || 1; let acc = 0;
+    spans.forEach((s, i) => { s.classList.toggle("on", acc / tot <= f * 0.92 + 0.07); acc += lens[i]; });
+    if (kOpen(r).length && t >= r.end - 0.12) { ytPause(); kWait(); }
+  }
+  let st = -1; try { st = YTP.getPlayerState(); } catch (e) {}
+  const last = seq[seq.length - 1];
+  if ((last && t > last.end + 1.5 && KAR.cur === seq.length - 1 && !kOpen(last).length) || st === 0) kFinish();
+  const p = document.getElementById("kprog"); if (p && last) p.style.width = Math.max(0, Math.min(100, t / last.end * 100)) + "%";
+}
+function drawKLines() {
+  const { seq } = KAR; const c = Math.max(0, KAR.cur);
+  const lineHtml = (r, i, cls) => {
+    let k = 0;
+    const body = r.parts.map((p, j) => {
+      if (j % 2 === 0) return esc(p);
+      if (r.gaps.has(j)) {
+        const res = r.res[j];
+        if (res === "ok") return `<span class="kw kok">${esc(p)}</span>`;
+        if (res === "no") return `<span class="kw kno">${esc(p)}</span>`;
+        if (cls === "cur") return `<input class="gap kw" data-li="${i}" data-j="${j}" data-ans="${esc(p)}" data-len="${esc(p)}" autocomplete="off" autocapitalize="off" spellcheck="false" size="${Math.max(3, p.length)}" aria-label="пропущене слово">`;
+        return `<span class="kw kblank">${"_".repeat(Math.max(3, p.length))}</span>`;
+      }
+      return `<span class="kw">${esc(p)}</span>`;
+    }).join("");
+    return `<div class="kl ${cls}" ${cls === "cur" ? 'id="kcur"' : ""}>${body}</div>`;
+  };
+  const rows = [];
+  if (KAR.cur < 0) rows.push(`<div class="kl next muted small">Скоро почнеться перший рядок…</div>`);
+  for (let i = Math.max(0, c - 1); i <= Math.min(seq.length - 1, c + 2); i++) rows.push(lineHtml(seq[i], i, KAR.cur < 0 ? "next" : i < c ? "prev" : i === c ? "cur" : "next"));
+  document.getElementById("klines").innerHTML = rows.join("") + `<div id="kfb"></div>`;
+  const inputs = [...document.querySelectorAll("#kcur input.gap")];
+  inputs.forEach(inp => inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); kCheck(inp); } }));
+  if (inputs[0] && KAR.started) inputs[0].focus({ preventScroll: true });
+}
+function kCheck(inp) {
+  const r = KAR.seq[Number(inp.dataset.li)], j = Number(inp.dataset.j), ans = inp.dataset.ans;
+  if (!inp.value.trim()) return;
+  const fb = document.getElementById("kfb");
+  if (same(inp.value, ans)) { r.res[j] = "ok"; KAR.right++; const w = toks(ans)[0]; if (w) bumpWord(KAR.song, w, r.tries[j] ? 0.05 : 0.12); fb.innerHTML = ""; }
+  else if (!r.tries[j]) {
+    r.tries[j] = 1; inp.classList.add("retry");
+    fb.innerHTML = `<div class="hintbox small">${near(inp.value, ans) ? `<b>Майже! Помилка тут:</b> ${diffHtml(inp.value, ans)}` : `<b>Не те слово, ще спроба.</b> Починається на «${esc(ans[0])}». Можна натиснути «Ще раз рядок».`}</div>`;
+    inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch (e) {}
+    return;
+  } else { r.res[j] = "no"; fb.innerHTML = `<div class="hintbox small">Правильно: <b>${esc(ans)}</b></div>`; const w = toks(ans)[0]; if (w) bumpWord(KAR.song, w, -0.05); }
+  save();
+  document.getElementById("kscore").textContent = `${KAR.right}/${KAR.total}`;
+  const keepFb = fb.innerHTML;
+  drawKLines(); document.getElementById("kfb").innerHTML = keepFb;
+  if (!kOpen(r).length && KAR.waiting) kResume();
+}
+function kWait() {
+  KAR.waiting = true;
+  setBar(`<div class="verdict" style="color:var(--ink)">Впиши пропущене слово</div><div class="two"><button class="btn ghost" id="kagain">Ще раз рядок</button><button class="btn ghost" id="khint">+1 буква</button></div><button class="linkbtn" id="kskip" style="align-self:center">Показати відповідь і далі</button>`);
+  const r = KAR.seq[KAR.cur];
+  document.getElementById("kagain").onclick = () => { const off = KAR.song.offset || 0; try { YTP.seekTo(r.t + off - 0.2, true); YTP.playVideo(); } catch (e) {} KAR.waiting = false; kNormalBar(); const i = document.querySelector("#kcur input.gap"); if (i) i.focus({ preventScroll: true }); };
+  document.getElementById("khint").onclick = () => { const i = document.activeElement && document.activeElement.matches && document.activeElement.matches("#kcur input.gap") ? document.activeElement : document.querySelector("#kcur input.gap"); if (i) { letterHint(i, i.dataset.ans, 0); r.tries[Number(i.dataset.j)] = 1; } };
+  document.getElementById("kskip").onclick = () => { kOpen(r).forEach(j => { r.res[j] = "no"; }); drawKLines(); kResume(); };
+  const i = document.querySelector("#kcur input.gap"); if (i) i.focus({ preventScroll: true });
+}
+function kResume() { KAR.waiting = false; kNormalBar(); ytPlay(); }
+function kNormalBar() {
+  setBar(`<div class="two"><button class="btn ghost" id="kback">◀ Рядок назад</button><button class="btn ghost" id="kpause">Пауза</button></div>`);
+  document.getElementById("kpause").onclick = () => { let st = -1; try { st = YTP.getPlayerState(); } catch (e) {} if (st === 1) { ytPause(); document.getElementById("kpause").textContent = "Грати"; } else { ytPlay(); document.getElementById("kpause").textContent = "Пауза"; } };
+  document.getElementById("kback").onclick = () => { const i = Math.max(0, KAR.cur - 1); const r = KAR.seq[i]; if (!r) return; KAR.cur = -2; try { YTP.seekTo(r.t + (KAR.song.offset || 0) - 0.2, true); YTP.playVideo(); } catch (e) {} };
+}
+function kFinish() {
+  if (!KAR || KAR.finished) return;
+  KAR.finished = true; clearInterval(KAR.timer); ytPause();
+  const { song, seq, right, total, lvl } = KAR;
+  const acc = total ? right / total : 0;
+  song.karaoke = song.karaoke || {}; song.karaoke[lvl] = Math.max(song.karaoke[lvl] || 0, acc);
+  bumpStreak(); save();
+  const missed = [...new Set(seq.flatMap(r => [...r.gaps].filter(j => r.res[j] !== "ok").map(j => r.parts[j])))];
+  app.innerHTML = `
+  <div class="stack" style="text-align:center;padding-top:12px"><span class="kind">Караоке · ${KLEVELS[lvl].label}</span><h1>${acc >= 0.9 ? "Ти співаєш цю пісню!" : acc >= 0.6 ? "Добре йде" : "Є над чим попрацювати"}</h1></div>
+  <div class="card resultpct"><span class="label">${esc(song.artist)} — ${esc(song.title)}</span><div class="pct">${right}<small>/${total}</small></div><p class="muted">слів вписано правильно</p></div>
+  ${missed.length ? `<div class="card"><h3>Слова, що не вийшли</h3><div class="chips">${missed.slice(0, 30).map(w => `<button class="chip" data-say="${esc(w)}">${esc(w)}</button>`).join("")}</div><p class="small muted">Їх варто пройти в уроках рядків.</p></div>` : ""}`;
+  wireAudio();
+  setBar(`<button class="btn sun" id="kre">${acc >= 0.9 && lvl < KLEVELS.length - 1 ? "Складніше: " + KLEVELS[lvl + 1].label : "Ще раз"}</button><button class="btn ghost" id="khome">На головну</button>`);
+  document.getElementById("kre").onclick = () => { if (acc >= 0.9 && lvl < KLEVELS.length - 1) { S.kLevel = lvl + 1; save(); } renderKaraoke(song); };
+  document.getElementById("khome").onclick = () => { stopKaraoke(); route(); };
+  VIEW = "result";
+}
+
+/* ---------- session ---------- */
+function weakest(song) {
+  let best = 0, bv = Infinity;
+  song.lines.forEach((l, i) => { const v = (song.lp[i] ? song.lp[i].best : 0) + (song.lp[i] ? song.lp[i].level : 0) * 0.1; if (v < bv) { bv = v; best = i; } });
+  return best;
+}
+function startSession(forceIdx) {
+  const song = curSong(); VIEW = "lesson";
+  const idx = forceIdx != null ? forceIdx : song.next < song.lines.length ? song.next : weakest(song);
+  const isNew = idx === song.next && song.next < song.lines.length;
+  const line = song.lines[idx];
+  if (!song.lp[idx]) song.lp[idx] = { best: 0, level: 0, sessions: 0 };
+  const steps = [];
+  steps.push({ t: "listen" });
+  dueWords().filter(r => !(r.song === song.id && r.line === idx)).slice(0, 4).forEach(r => {
+    const w = S.songs[r.song] ? wordObj(S.songs[r.song], r.w) : { w: r.w, ua: r.ua, say: r.say };
+    steps.push(r.stage >= 2 || !r.ua ? { t: "typeEn", w, review: r } : r.stage === 1 ? { t: "hear", w, review: r } : { t: "pickUa", w, review: r });
+  });
+  const fresh = line.words.filter(w => !S.words[wkey(song.id, w.w)]);
+  const known = line.words.slice();
+  ensureDistractors(song, line.words);
+  const shaky = known.filter(w => { const r = S.words[wkey(song.id, w.w)]; return !r || r.stage <= 1; });
+  shaky.forEach(w => steps.push({ t: "intro", w }));
+  shuffle(known).forEach(w => steps.push({ t: "pickUa", w, learn: true }));
+  shuffle(known).filter(w => endCut(w.w)).forEach(w => steps.push({ t: "typeEn", w, ending: true }));
+  shuffle(known).forEach(w => steps.push({ t: "hear", w, learn: true }));
+  steps.push({ t: "build", target: known[0] ? known[0].w : null });
+  shuffle(known).forEach(w => steps.push({ t: "typeEn", w }));
+  steps.push({ t: "gaps" });
+  if (idx > 0 && song.lines[idx - 1].words.some(x => S.words[wkey(song.id, x.w)])) steps.push({ t: "spiral" });
+  steps.push({ t: "sing" });
+  steps.push({ t: "whole" });
+  shuffle(known).forEach(w => steps.push({ t: "pickUa", w, learn: true, recap: true }));
+  shuffle(known).forEach(w => steps.push({ t: "typeEn", w, recap: true }));
+  if ((song.lp[idx].sessions || 0) >= 2 && line.ua) steps.push({ t: "retell" });
+  SES = { sid: song.id, idx, isNew, steps, i: 0, before: songPct(song), right: 0, total: 0, fRight: 0, fTotal: 0, gapsClean: true, sing: null, fresh: fresh.length, missed: 0 };
+  renderStep();
+}
+function sesSong() { return S.songs[SES.sid]; }
+function sesLine() { return sesSong().lines[SES.idx]; }
+function lessonFrame(inner) {
+  const _s = sesSong(); if (_s.videoId) { showPlayer(true); ensurePlayer(_s); } else showPlayer(false);
+  const p = Math.round(SES.i / SES.steps.length * 100);
+  app.innerHTML = `<div class="lessonbar"><button class="x" id="quit" aria-label="Вийти">×</button><div class="track"><div style="width:${p}%"></div></div></div>${inner}`;
+  document.getElementById("quit").onclick = () => { save(); route(); };
+}
+function next() { stopListening(); stopAudio(); if (!SES) return; SES.i++; if (SES.i >= SES.steps.length) return finishSession(); renderStep(); window.scrollTo(0, 0); }
+function requeue(st) { if (!st.again) { SES.steps.push(Object.assign({}, st, { again: true })); SES.missed++; } }
+function verdict(ok, text, extra = "", again) {
+  setBar(`<div class="verdict">${esc(text)}</div>${extra}${again ? `<p class="small">Повернемось до цього в кінці сесії.</p>` : ""}<button class="btn ${ok ? "good" : "bad"}" id="cont">Далі</button>`, ok ? "ok" : "no");
+  document.getElementById("cont").onclick = next;
+  document.getElementById("cont").focus();
+}
+/* first attempts decide whether the line is passed; a fix on the second try counts half */
+function score(ok, half) { SES.total++; if (ok) SES.right++; const st = SES.steps[SES.i]; if (st && !st.again) { SES.fTotal++; SES.fRight += ok ? (half ? 0.5 : 1) : 0; } }
+function renderStep() {
+  const st = SES.steps[SES.i]; hideBar();
+  ({ listen: stepListen, intro: stepIntro, pickUa: stepPickUa, hear: stepHear, build: stepBuild, typeEn: stepTypeEn, gaps: () => stepGaps(false), whole: () => stepGaps(false, true), spiral: () => stepGaps(true), sing: stepSing, retell: stepRetell })[st.t](st);
+}
+const againTag = st => st.again ? " · ще раз" : "";
+function lineTextFor(st) { const r = st.review; return r && S.songs[r.song] && S.songs[r.song].lines[r.line] ? S.songs[r.song].lines[r.line].en : sesLine().en; }
+
+/* listen: the line plays from the song as soon as the lesson opens */
+function stepListen() {
+  const s = sesSong(), l = sesLine();
+  const wordChips = l.words.map(w => `<button class="chip" data-say="${esc(w.w)}">${esc(w.w)}<span class="tip">${esc(w.ua || "")}</span></button>`).join("");
+  const sp = lineSpan(s, SES.idx);
+  lessonFrame(`<div class="stack"><span class="kind">${SES.isNew ? "Новий рядок" : "Повертаємось до рядка"} ${SES.idx + 1}/${s.lines.length}</span><h2>Послухай, що будемо вчити</h2></div>
+    <div class="card">
+      <div class="lyric" id="kar">${kwHtml(l.en)}</div>
+      ${lineButtons(SES.idx, l.en)}
+      ${hasLineAudio(SES.idx) ? `<div class="adj">Рядок обрізано? <button id="earlier">◀ раніше</button><button id="later">пізніше ▶</button></div>` : `<div class="note small">${audioReady && audioSongId === s.id ? "Цей рядок ще не знайдено в пісні." : (s.videoId ? "Відео ще вантажиться, спробуй кнопку за секунду." : "Для цієї пісні не додано відео з YouTube. Додай посилання на головній.")}${canSpeak() ? " Поки що можна послухати голосом." : " Голос у цьому браузері недоступний: відкрий сайт у Chrome."}</div>`}
+      ${l.ua ? `<div class="tr">${esc(l.ua)}</div>` : `<p class="muted small">Перекладу ще немає. Додай його кнопкою «Оновити переклад» у налаштуваннях на головній.</p>`}
+      ${l.note ? `<div class="note">${esc(l.note)}</div>` : ""}
+      ${l.rep > 1 ? `<p class="small muted">Цей рядок звучить у пісні ${l.rep} ${plural(l.rep, "раз", "рази", "разів")}.</p>` : ""}
+    </div>
+    ${wordChips ? `<div class="stack"><span class="label">Слова цього рядка</span><div class="chips">${wordChips}</div></div>` : ""}`);
+  const kar = karaokeFor(document.getElementById("kar"));
+  wireAudio(app, kar);
+  const nudge = d => { s.adj = s.adj || {}; s.adj[SES.idx] = Math.round(((s.adj[SES.idx] || 0) + d) * 10) / 10; save(); playLine(SES.idx, { onTick: kar, onEnd: () => kar(-1) }); };
+  const e1 = document.getElementById("earlier"), e2 = document.getElementById("later");
+  if (e1) e1.onclick = () => nudge(-0.4); if (e2) e2.onclick = () => nudge(0.4);
+  setBar(`<button class="btn" id="cont">Зрозуміло, далі</button>`);
+  document.getElementById("cont").onclick = next;
+}
+
+/* intro: hear the word, then its syllables, then put it back together */
+function partsOf(w) { if (w.parts && w.parts.length) return w.parts; return syllabify(w.w).map(en => ({ en, ua: "" })); }
+function stepIntro(st) {
+  const w = st.w, l = sesLine();
+  const re = new RegExp("\\b(" + w.w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "['’]") + ")\\b", "i");
+  const ctx = esc(l.en).replace(re, "<b style=\"color:var(--accent)\">$1</b>");
+  const render = () => {
+    const parts = partsOf(w);
+    return `<div class="stack"><span class="kind">Нове слово</span><h2>Послухай і повтори вголос</h2></div>
+    <div class="card" style="align-items:flex-start">
+      <div class="bigword">${esc(w.w)}</div>
+      ${w.say ? `<div class="say">${esc(w.say)}</div>` : ""}
+      <div class="audiorow">${canSpeak() ? `<button class="speak" data-say="${esc(w.w)}">${ICON_SPEAK}Послухати</button><button class="speak" data-say="${esc(w.w)}" data-rate="0.7">Повільно</button>` : ""}</div>
+      ${w.w.length >= 6 ? `<p class="small muted">Глянь, як пишеться: <b>${esc(w.w.slice(0, w.w.length - endCut(w.w)))}</b><b style="color:var(--accent)">${esc(w.w.slice(w.w.length - endCut(w.w)))}</b>. Спершу допишеш закінчення, потім слово цілком.</p>` : ""}
+      <div class="tr">${esc(w.ua || "переклад не додано")}</div>
+      <p class="small muted">У рядку: ${ctx}</p><p class="small muted">Голос синтезований, тож вимова може трохи відрізнятись від співака. Порівняй з рядком з пісні.</p>
+      ${hasLineAudio(SES.idx) ? lineButtons(SES.idx, l.en) : ""}
+    </div>`;
+  };
+  const draw = () => {
+    lessonFrame(render()); wireAudio();
+  };
+  draw();
+  if (false) {
+    SAMPLE.json(`Розбий англійське слово "${w.w}" на склади для вимови україномовному новачку. Відповідай лише JSON: {"say":"вимова українськими літерами, наголошений склад ВЕЛИКИМИ","parts":[{"en":"частина слова як пишеться","ua":"як звучить українськими літерами"}]}. Частини разом мають дати рівно "${w.w}".`, { modelTier: "quick" })
+      .then(r => { const p = cleanParts(w.w, r && r.parts); if (p) { w.parts = p; if (r.say && !w.say) w.say = String(r.say).slice(0, 40); save(); if (SES && SES.steps[SES.i] === st) draw(); } }).catch(() => {});
+  }
+  setBar(`<button class="btn" id="cont">Повторив, далі</button>`);
+  document.getElementById("cont").onclick = next;
+}
+
+/* shared multiple-choice: auto-checked, wrong answers come back at the end */
+function choiceStep(st, { kind, title, promptHtml, options, correct, onDone, afterRender }) {
+  lessonFrame(`<div class="stack"><span class="kind">${esc(kind)}${againTag(st)}</span><h2>${esc(title)}</h2></div>
+    <div class="card" style="align-items:center;text-align:center">${promptHtml}</div>
+    <div class="opts">${options.map((o, i) => `<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")}</div>`);
+  wireAudio(); if (afterRender) afterRender();
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const pick = options[Number(b.dataset.i)]; const ok = pick === correct;
+    app.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (options[Number(x.dataset.i)] === correct) x.classList.add("ok"); });
+    if (!ok) { b.classList.add("no"); requeue(st); }
+    score(ok); onDone(ok);
+    verdict(ok, ok ? "Так!" : "Ні, правильно: " + correct, "", !ok && !st.again);
+  });
+}
+function ensureDistractors(song, words) {
+  if (!SAMPLE) return;
+  words.filter(w => w.ua && !w.dUa && !w._asking).forEach(w => {
+    w._asking = true;
+    const line = (song.lines.find(l => l.words.includes(w)) || {}).en || "";
+    SAMPLE.json(`Слово з пісні: "${w.w}", значення тут: "${w.ua}", рядок: "${line}". Для тесту новачку дай JSON {"ua":[...],"en":[...]}.
+"ua": 3 НЕправильні українські варіанти перекладу, тієї ж частини мови й схожої форми, правдоподібні, щоб не можна було вгадати методом виключення (для "tell"="сказати": "спитати","почути","покликати"; для "closure"="завершення": "закриття","спокій","прощання"), але жоден не означає "${w.ua}".
+"en": 3 англійські слова, схожі на "${w.w}" за звучанням чи написанням (для "closure": "closer","clothes","close"; для "never": "ever","nether","clever").`, { modelTier: "quick" })
+      .then(r => {
+        const ua = (r && Array.isArray(r.ua) ? r.ua : []).map(x => String(x).trim().slice(0, 40)).filter(x => x && x !== w.ua).slice(0, 3);
+        const en = (r && Array.isArray(r.en) ? r.en : []).map(x => toks(x)[0] || "").filter(x => x && x !== w.w).slice(0, 3);
+        if (ua.length === 3) w.dUa = ua; if (en.length === 3) w.dEn = en; delete w._asking; save();
+      }).catch(() => { delete w._asking; });
+  });
+}
+function uaOptions(w, song) {
+  if (w.dUa && w.dUa.length === 3) return shuffle([w.ua, ...w.dUa]);
+  const pool = new Set(); song.lines.forEach(l => l.words.forEach(x => { if (x.ua && x.ua !== w.ua) pool.add(x.ua); }));
+  Object.values(S.words).forEach(r => { if (r.ua && r.ua !== w.ua) pool.add(r.ua); });
+  const end2 = w.ua.slice(-2);
+  let d = shuffle([...pool]).sort((a, b) => (b.slice(-2) === end2) - (a.slice(-2) === end2) || Math.abs(a.length - w.ua.length) - Math.abs(b.length - w.ua.length)).slice(0, 3); for (const u of shuffle(UA_POOL)) { if (d.length >= 3) break; if (u !== w.ua && !d.includes(u)) d.push(u); }
+  return shuffle([w.ua, ...d]);
+}
+function enOptions(w, song) {
+  if (w.dEn && w.dEn.length === 3) return shuffle([w.w, ...w.dEn]);
+  const pool = [...new Set([...song.uniq, ...EN_POOL])].filter(x => x !== w.w && !STOP.has(x) && x.length > 2);
+  let d = shuffle(pool).sort((a, b) => lev(a, w.w) - lev(b, w.w)).slice(0, 3);
+  for (const u of shuffle(EN_POOL)) { if (d.length >= 3) break; if (u !== w.w && !d.includes(u)) d.push(u); }
+  return shuffle([w.w, ...d]);
+}
+function afterChoice(st, ok) {
+  const sid = st.review ? st.review.song : SES.sid;
+  if (st.review && !st.again) srs(sid, st.w, ok, st.review.line);
+  else { const s = S.songs[sid]; if (s) bumpWord(s, st.w.w, ok ? 0.08 : -0.05); }
+  save();
+}
+function stepPickUa(st) {
+  const w = st.w, song = S.songs[st.review ? st.review.song : SES.sid];
+  if (!w.ua) return next();
+  choiceStep(st, { kind: st.review ? "Повторення" : "Впізнай слово", title: "Що означає це слово?",
+    promptHtml: `<div class="bigword">${esc(w.w)}</div>${canSpeak() ? `<button class="speak" data-say="${esc(w.w)}">${ICON_SPEAK}Послухати</button>` : ""}`,
+    options: uaOptions(w, song), correct: w.ua, onDone: ok => afterChoice(st, ok) });
+}
+function stepHear(st) {
+  const w = st.w, song = S.songs[st.review ? st.review.song : SES.sid];
+  if (!canSpeak()) return stepPickUa(st);
+  choiceStep(st, { kind: st.review ? "Повторення" : "На слух", title: "Яке слово прозвучало?",
+    promptHtml: `<button class="playbig" data-say="${esc(w.w)}" aria-label="Прослухати ще раз">${ICON_SPEAK}</button><button class="linkbtn" data-say="${esc(w.w)}" data-rate="0.7">повільніше</button>`,
+    options: enOptions(w, song), correct: w.w, onDone: ok => afterChoice(st, ok) });
+}
+
+/* build: tap word tiles in order while the line plays */
+function stepBuild(st) {
+  const l = sesLine(); const parts = splitLine(l.en);
+  const wi = []; for (let i = 1; i < parts.length; i += 2) wi.push(i);
+  let win = wi;
+  if (wi.length > 8) {
+    let p = st.target ? wi.findIndex(i => toks(parts[i])[0] === st.target) : 0; if (p < 0) p = 0;
+    const start = Math.max(0, Math.min(p - 3, wi.length - 7)); win = wi.slice(start, start + 7);
+  }
+  const before = parts.slice(0, win[0]).join(""), after = parts.slice(win[win.length - 1] + 1).join("");
+  const expected = win.map(i => parts[i]);
+  const tiles = shuffle(expected.map((t, k) => ({ t, k })));
+  const chosen = [];
+  lessonFrame(`<div class="stack"><span class="kind">Збери рядок${againTag(st)}</span><h2>Послухай і склади слова по порядку</h2></div>
+    <div class="card">${lineButtons(SES.idx, l.en)}
+      ${l.ua ? `<p class="small muted">${esc(l.ua)}</p>` : ""}
+      ${before.trim() ? `<div class="fixed">${esc(before)}…</div>` : ""}
+      <div class="slots" id="slots"></div>
+      ${after.trim() ? `<div class="fixed">…${esc(after)}</div>` : ""}
+    </div>
+    <div class="tiles" id="bank">${tiles.map((x, j) => `<button class="tile" data-j="${j}">${esc(x.t)}</button>`).join("")}</div>`);
+  wireAudio();
+  const slots = document.getElementById("slots");
+  const redraw = () => {
+    slots.innerHTML = chosen.map((j, pos) => `<button class="tile" data-pos="${pos}">${esc(tiles[j].t)}</button>`).join("");
+    app.querySelectorAll("#bank .tile").forEach(b => b.classList.toggle("used", chosen.includes(Number(b.dataset.j))));
+    slots.querySelectorAll(".tile").forEach(b => b.onclick = () => { chosen.splice(Number(b.dataset.pos), 1); redraw(); });
+    document.getElementById("chk").disabled = chosen.length !== tiles.length;
+  };
+  app.querySelectorAll("#bank .tile").forEach(b => b.onclick = () => { const j = Number(b.dataset.j); if (!chosen.includes(j)) { chosen.push(j); redraw(); } });
+  setBar(`<button class="btn" id="chk" disabled>Перевірити</button>`);
+  document.getElementById("chk").onclick = () => {
+    const marks = chosen.map((j, pos) => same(tiles[j].t, expected[pos]));
+    const ok = marks.every(Boolean);
+    slots.querySelectorAll(".tile").forEach((b, pos) => { b.disabled = true; b.classList.add(marks[pos] ? "ok" : "no"); });
+    app.querySelectorAll("#bank .tile").forEach(b => b.disabled = true);
+    score(ok); if (!ok) requeue(st);
+    const s = sesSong(); expected.forEach(t => { const w = toks(t)[0]; if (w) bumpWord(s, w, ok ? 0.1 : 0); }); save();
+    verdict(ok, ok ? "Рядок зібрано!" : "Порядок інший:", ok ? "" : `<div class="tr">${esc(expected.join(" "))}</div>`, !ok && !st.again);
+  };
+}
+
+/* type from memory: near-miss shows where the mistake is and gives a second try */
+/* one more correct letter per tap, starting from where the learner went wrong */
+function letterHint(inp, target, cut) {
+  const want = cut ? target.slice(target.length - cut) : target;
+  const v = inp.value.toLowerCase(); let k = 0;
+  while (k < v.length && k < want.length && v[k] === want[k].toLowerCase()) k++;
+  inp.value = want.slice(0, Math.min(want.length, k + 1));
+  inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch (e) {}
+  inp.classList.add("hinted"); setTimeout(() => inp.classList.remove("hinted"), 500);
+}
+function endCut(w) { return w.length >= 8 ? 3 : w.length >= 5 ? 2 : 0; }
+function stepTypeEn(st) {
+  const w = st.w; const r = st.review; const s = sesSong();
+  const cut = st.ending ? endCut(w.w) : 0;
+  const prompt = w.ua || "(без перекладу) слово з рядка: " + lineTextFor(st).replace(new RegExp("\\b" + w.w + "\\b", "i"), "____");
+  lessonFrame(`<div class="stack"><span class="kind">${r ? "Повторення" : st.ending ? "Закінчення слова" : st.recap ? "Ще раз з пам'яті" : "Згадай слово"}${againTag(st)}</span><h2>${cut ? "Допиши кінець слова" : "Напиши англійською"}</h2></div>
+    <div class="card"><div class="tr" style="font-size:22px">${esc(prompt)}</div>
+    ${cut ? `<div class="row" style="gap:4px;flex-wrap:nowrap"><span class="bigword" style="font-size:28px">${esc(w.w.slice(0, w.w.length - cut))}</span><input type="text" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${"_".repeat(cut)}" style="width:${cut + 3}ch;font-size:24px;font-weight:800"></div>` : `<input type="text" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="англійською…">`}
+    <div id="fb"></div>
+    <div class="row"><button class="linkbtn" id="hint">Підказка: +1 буква</button></div></div>`);
+  const inp = document.getElementById("ans"); inp.focus();
+  const target = cut ? w.w.slice(w.w.length - cut) : w.w;
+  let hinted = false, tries = 0;
+  const hintText = () => w.w[0] + " " + "_ ".repeat(Math.max(0, w.w.length - 1)).trim() + (w.say ? "  ·  " + w.say : "");
+  document.getElementById("hint").onclick = () => { hinted = true; letterHint(inp, w.w, cut); };
+  const sid = r ? r.song : s.id;
+  const done = (ok, firstTry) => {
+    inp.disabled = true; score(ok, ok && (!firstTry || hinted));
+    if (!st.again && !st.ending && !st.recap) srs(sid, w, ok, r ? r.line : SES.idx, ok && (!firstTry || hinted));
+    else bumpWord(S.songs[sid], w.w, ok ? 0.05 : -0.05);
+    if (!ok) requeue(st);
+    save();
+    verdict(ok, ok ? (firstTry && !hinted ? "Правильно!" : "Правильно, з другої спроби") : "Правильно буде:",
+      ok ? "" : `<div class="bigword" style="font-size:24px">${esc(w.w)}</div><div class="small">Ти написав: ${diffHtml(inp.value, target)}</div>`, !ok && !st.again);
+  };
+  const check = () => {
+    if (!inp.value.trim() || inp.disabled) { inp.focus(); return; }
+    tries++;
+    if (same(inp.value, target)) return done(true, tries === 1);
+    if (tries === 1) {
+      const isNear = near(inp.value, target);
+      document.getElementById("fb").innerHTML = `<div class="hintbox">${isNear ? `<b>Майже! Помилка тут:</b> ${diffHtml(inp.value, target)}<span class="muted small">Виправ і перевір ще раз. «Підказка» додасть правильну букву з місця помилки.</span>` : `<b>Не те слово. Ще одна спроба.</b><span class="muted small">Тапни «Підказка», щоб отримати першу букву.</span>`}</div>`;
+      inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch (e) {}
+      document.getElementById("chk").textContent = "Спробувати ще раз";
+      return;
+    }
+    done(false, false);
+  };
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+  setBar(`<button class="btn" id="chk">Перевірити</button>`);
+  document.getElementById("chk").onclick = check;
+}
+
+/* gaps: level 0 → 1 gap, 1 → 2 gaps, 2 → half, 3+ → whole line. Spiral = previous line + this one. Second try for wrong gaps. */
+function splitLine(text) { return String(text).split(/([A-Za-z0-9'’]+)/); }
+function pickGaps(parts, count, prefer) {
+  const idxs = []; for (let i = 1; i < parts.length; i += 2) idxs.push(i);
+  if (count >= idxs.length) return new Set(idxs);
+  const pref = shuffle(idxs.filter(i => prefer.has(toks(parts[i])[0])));
+  const content = shuffle(idxs.filter(i => !prefer.has(toks(parts[i])[0]) && !STOP.has(toks(parts[i])[0])));
+  const rest = shuffle(idxs.filter(i => !pref.includes(i) && !content.includes(i)));
+  return new Set([...pref, ...content, ...rest].slice(0, Math.max(1, count)));
+}
+function gapCount(level, n) { return level <= 0 ? 1 : level === 1 ? 3 : level === 2 ? Math.ceil(n / 2) : n; }
+function studiedIn(song, text, also) { return new Set(toks(text).filter(w => S.words[wkey(song.id, w)] || (also && also.has(w)))); }
+function pickStudiedGaps(parts, count, studied, level) {
+  if (level >= 2) return pickGaps(parts, count, studied);
+  if (level === 1) {
+    const out = new Set(); const w = []; for (let i = 1; i < parts.length; i += 2) w.push(i);
+    w.forEach((i, k) => { if (studied.has(toks(parts[i])[0])) { out.add(i); [w[k - 1], w[k + 1]].forEach(j => { if (j && STOP.has(toks(parts[j])[0])) out.add(j); }); } });
+    if (out.size) return out;
+  }
+  const idxs = []; for (let i = 1; i < parts.length; i += 2) if (studied.has(toks(parts[i])[0])) idxs.push(i);
+  return new Set(shuffle(idxs).slice(0, Math.max(1, Math.min(count, idxs.length))));
+}
+function stepGaps(spiral, whole) {
+  const s = sesSong(), l = sesLine(), lp = s.lp[SES.idx];
+  const rows = [];
+  if (whole) rows.push({ text: l.en, n: 999, studied: new Set(toks(l.en)), level: 3 });
+  else if (spiral) {
+    const pi = SES.idx - 1, pl = s.lines[pi], plp = s.lp[pi] || { level: 0 };
+    rows.push({ text: pl.en, n: 1, studied: studiedIn(s, pl.en), level: 0, prev: true });
+    rows.push({ text: l.en, n: 1, studied: studiedIn(s, l.en, new Set(l.words.map(w => w.w))), level: 0 });
+  } else rows.push({ text: l.en, n: gapCount(lp.level, toks(l.en).length), studied: studiedIn(s, l.en, new Set(l.words.map(w => w.w))), level: lp.level });
+  let gi = 0;
+  const html = rows.map(r => {
+    const parts = splitLine(r.text); const g = r.studied.size || r.level >= 3 ? pickStudiedGaps(parts, r.n, r.studied, r.level) : new Set(); r.parts = parts; r.gaps = g;
+    return `<div class="lyric ${r.prev ? "prev" : ""}">${parts.map((p, i) => g.has(i) ? `<input class="gap" id="g${gi++}" data-ans="${esc(p)}" autocomplete="off" autocapitalize="off" spellcheck="false" size="${Math.max(3, p.length)}" ${whole && lp.level < 2 ? `placeholder="${esc(p[0])}${"·".repeat(Math.max(0, p.length - 1))}"` : ""} aria-label="пропущене слово">` : esc(p)).join("")}</div>`;
+  }).join("");
+  const full = rows.every(r => r.gaps.size >= Math.floor(r.parts.length / 2));
+  const audioBtns = spiral ? (hasLineAudio(SES.idx - 1) && hasLineAudio(SES.idx) ? `<div class="audiorow"><button class="speak" id="both">${ICON_PLAY}Обидва рядки з пісні</button></div>` : canSpeak() ? `<div class="audiorow"><button class="speak" data-say="${esc(rows[0].text + ". " + rows[1].text)}">${ICON_SPEAK}Голосом</button></div>` : "") : lineButtons(SES.idx, l.en);
+  lessonFrame(`<div class="stack"><span class="kind">${whole ? "Весь рядок" : spiral ? "Повернення" : "Пропуски"}</span><h2>${whole ? "Напиши весь рядок, кожне слово" + (lp.level < 2 ? " (перші букви підказано)" : "") : spiral ? "Попередній рядок і новий разом" : full ? "Напиши рядок з пам'яті" : hasLineAudio(SES.idx) ? "Впиши слово, поки грає пісня" : "Впиши пропущені слова"}</h2></div>
+    <div class="card">${html}${audioBtns}<div id="fb"></div><button class="linkbtn" id="ghint" style="align-self:flex-start">Підказка: +1 буква</button></div>
+    <p class="muted small">${spiral ? "Так старе тримається разом з новим, як куплет у пісні." : "Пиши так, як чуєш у пісні. Великі літери й апострофи не важливі."}</p>`);
+  wireAudio();
+  const both = document.getElementById("both");
+  if (both) both.onclick = () => { const a = lineSpan(s, SES.idx - 1), b = lineSpan(s, SES.idx); if (a && b) playRange(a.start, Math.max(a.end, b.end), { btn: both }); };
+  const inputs = [...app.querySelectorAll(".gap")];
+  inputs.forEach((inp, k) => inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); const nx = inputs.slice(k + 1).find(x => !x.disabled); if (nx) nx.focus(); else check(); } }));
+  if (!inputs.length) return next();
+  if (inputs[0]) inputs[0].focus();
+  let lastGap = inputs[0];
+  inputs.forEach(inp => inp.addEventListener("focus", () => { lastGap = inp; }));
+  document.getElementById("ghint").onclick = () => { const g = lastGap && !lastGap.disabled ? lastGap : inputs.find(x => !x.disabled); if (g) { letterHint(g, g.dataset.ans, 0); SES.gapsClean = false; } };
+  if (!spiral && hasLineAudio(SES.idx)) {
+    const loopBtn = document.createElement("button"); loopBtn.className = "speak"; loopBtn.id = "loop"; loopBtn.innerHTML = ICON_PLAY + "Грати по колу";
+    app.querySelector(".card .audiorow").prepend(loopBtn);
+    const startLoop = () => playLine(SES.idx, { loops: 50, btn: loopBtn });
+    loopBtn.onclick = () => { if (play.btn === loopBtn) { stopAudio(); loopBtn.innerHTML = ICON_PLAY + "Грати по колу"; } else { startLoop(); loopBtn.innerHTML = ICON_PLAY + "Грає по колу · стоп"; } };
+  }
+  let round = 0, firstOk = 0;
+  const check = () => {
+    round++; stopAudio();
+    const open = inputs.filter(x => !x.disabled);
+    const wrong = [];
+    open.forEach(inp => {
+      const good = same(inp.value, inp.dataset.ans);
+      if (good) { inp.disabled = true; inp.classList.remove("retry"); inp.classList.add("ok"); const w = toks(inp.dataset.ans)[0]; if (w) bumpWord(s, w, round === 1 ? 0.34 : 0.2); if (round === 1) firstOk++; }
+      else wrong.push(inp);
+    });
+    if (wrong.length && round === 1) {
+      wrong.forEach(inp => inp.classList.add("retry"));
+      document.getElementById("fb").innerHTML = `<div class="hintbox"><b>${inputs.length - wrong.length} з ${inputs.length}. Виправ виділене:</b>${wrong.map(inp => inp.value.trim() ? (near(inp.value, inp.dataset.ans) ? `<span>майже: ${diffHtml(inp.value, inp.dataset.ans)}</span>` : `<span class="muted">«${esc(inp.value)}» не те слово, починається на «${esc(inp.dataset.ans[0])}»</span>`) : `<span class="muted">порожньо, починається на «${esc(inp.dataset.ans[0])}»</span>`).join("")}</div>`;
+      wrong[0].focus(); try { wrong[0].setSelectionRange(wrong[0].value.length, wrong[0].value.length); } catch (e) {}
+      document.getElementById("chk").textContent = "Спробувати ще раз";
+      return;
+    }
+    wrong.forEach(inp => {
+      inp.disabled = true; inp.classList.remove("retry"); inp.classList.add("no");
+      const f = document.createElement("span"); f.className = "fix"; f.textContent = " " + inp.dataset.ans; inp.after(f);
+      const w = toks(inp.dataset.ans)[0]; if (w) bumpWord(s, w, -0.1);
+    });
+    document.getElementById("fb").innerHTML = "";
+    const allOk = !wrong.length;
+    SES.total += inputs.length; SES.right += inputs.length - wrong.length;
+    if (!SES.steps[SES.i].again) { SES.fTotal += inputs.length; SES.fRight += firstOk + (inputs.length - wrong.length - firstOk) * 0.5; }
+    if (!(allOk && round === 1) && !spiral && !whole) SES.gapsClean = false;
+    if (whole) toks(l.en).forEach(x => bumpWord(s, x, 0));
+    if (spiral && allOk && round === 1) { const plp = s.lp[SES.idx - 1]; if (plp && plp.level < 3) plp.level++; }
+    if (!allOk) requeue(SES.steps[SES.i]);
+    save();
+    verdict(allOk, allOk ? (round === 1 ? "Все правильно!" : "Виправив, молодець!") : `${inputs.length - wrong.length} з ${inputs.length}. Глянь виправлення вище.`, "", !allOk && !SES.steps[SES.i].again);
+  };
+  setBar(`<button class="btn" id="chk">Перевірити</button>`);
+  document.getElementById("chk").onclick = check;
+}
+
+/* sing */
+let listening = false, srObj = null;
+function stopListening() {
+  if (DICT && listening) { try { DICT.stop().catch(() => {}); } catch (e) {} }
+  if (srObj) { try { srObj.abort(); } catch (e) {} srObj = null; }
+  listening = false; dictHandlers = { partial: null, final: null, state: null };
+}
+function scoreSung(lineText, heard) {
+  const target = toks(lineText), got = toks(heard); const used = new Array(got.length).fill(false);
+  const marks = target.map(t => { const j = got.findIndex((g, k) => !used[k] && (same(g, t) || (t.length >= 5 && near(g, t)))); if (j >= 0) { used[j] = true; return true; } return false; });
+  return { marks, score: target.length ? marks.filter(Boolean).length / target.length : 0 };
+}
+function stepSing() {
+  const s = sesSong(), l = sesLine(), lp = s.lp[SES.idx];
+  const fromMemory = lp.level >= 2;
+  const parts = splitLine(l.en);
+  const shown = fromMemory ? parts.map((p, i) => i % 2 === 1 && i > 1 ? "_".repeat(Math.min(6, p.length)) : p).join("") : l.en;
+  const micOk = !!DICT || !!BrowserSR;
+  lessonFrame(`<div class="stack"><span class="kind">Співаємо</span><h2>${fromMemory ? "Заспівай рядок по пам'яті" : "Послухай і заспівай рядок"}</h2></div>
+    <div class="card"><div class="lyric sungline" id="sung">${esc(shown)}</div>
+      ${lineButtons(SES.idx, l.en)}${fromMemory ? `<button class="linkbtn" id="peek">Підглянути</button>` : ""}</div>
+    ${micOk ? `<button class="mic" id="mic" aria-label="Почати запис">${ICON_MIC}</button><p class="heard" id="heard">Спершу послухай, потім натисни мікрофон і співай. Натисни ще раз, коли закінчиш.</p>`
+      : `<div class="note small">Мікрофон тут недоступний (найкраще працює в Chrome). Заспівай рядок вголос і оціни себе.</div>`}
+    <p class="muted small">Перевірка показує, які слова розпізнались. Це не оцінка акценту.</p>`);
+  wireAudio();
+  const peek = document.getElementById("peek"); if (peek) peek.onclick = () => { document.getElementById("sung").textContent = l.en; peek.remove(); };
+  const finish = (sc, self) => { SES.sing = sc; lp.best = Math.max(lp.best || 0, self ? Math.min(0.7, sc) : sc); if (!self) lp.micBest = Math.max(lp.micBest || 0, sc); save(); };
+  const selfRate = () => {
+    setBar(`<div class="verdict" style="color:var(--ink)">Як вийшло?</div><div class="two"><button class="btn ghost" data-v="0.3">Важко</button><button class="btn ghost" data-v="0.6">Майже</button></div><button class="btn good" data-v="0.9">Легко, все заспівав</button>`);
+    barin.querySelectorAll("[data-v]").forEach(b => b.onclick = () => { finish(Number(b.dataset.v), true); next(); });
+  };
+  if (!micOk) { keyboardSing(""); return; }
+  const mic = document.getElementById("mic"), heard = document.getElementById("heard");
+  let text = "", partial = "";
+  const keyboardSing = why => {
+    stopListening();
+    if (mic) mic.hidden = true;
+    const box = document.createElement("div"); box.className = "card";
+    box.innerHTML = `${why ? `<div class="warn small">${esc(why)}</div>` : ""}<b>Заспівай через клавіатуру телефона</b><p class="small muted">Тапни поле нижче, на клавіатурі натисни значок мікрофона, переключи мову диктування на English і заспівай рядок. Клавіатура сама запише слова.</p><textarea id="kbd" style="min-height:80px" autocapitalize="off" spellcheck="false" placeholder="тут з'явиться те, що ти заспівав"></textarea>`;
+    (heard || app.lastElementChild).after(box);
+    setBar(`<button class="btn" id="kchk">Перевірити</button><button class="linkbtn" id="selfr2" style="align-self:center">Пропустити (без зарахування)</button>`);
+    document.getElementById("kchk").onclick = () => { const v = document.getElementById("kbd").value.trim(); if (!v) { document.getElementById("kbd").focus(); return; } text = v; partial = ""; evaluate(); };
+    document.getElementById("selfr2").onclick = () => { SES.sing = null; next(); };
+  };
+  const show = () => { heard.textContent = (text + " " + partial).trim() || "Слухаю…"; };
+  const evaluate = () => {
+    const res = scoreSung(l.en, text + " " + partial);
+    const t = toks(l.en); let k = 0;
+    document.getElementById("sung").innerHTML = splitLine(l.en).map((p, i) => i % 2 === 1 ? `<span class="w ${res.marks[k++] ? "hit" : "miss"}">${esc(p)}</span>` : esc(p)).join("");
+    t.forEach((w, i) => { if (res.marks[i]) bumpWord(s, w, 0.15); });
+    finish(res.score, false);
+    const pct = Math.round(res.score * 100); const good = res.score >= 0.7;
+    setBar(`<div class="verdict">${good ? "Класно! " : ""}Розпізнано ${pct}% слів</div><div class="two"><button class="btn ghost" id="again">Ще раз</button><button class="btn ${good ? "good" : ""}" id="cont">Далі</button></div>`, good ? "ok" : "no");
+    document.getElementById("again").onclick = () => stepSing();
+    document.getElementById("cont").onclick = next;
+  };
+  const setLive = on => { listening = on; mic.classList.toggle("live", on); mic.setAttribute("aria-label", on ? "Зупинити запис" : "Почати запис"); };
+  setBar(`<button class="linkbtn" id="selfr" style="align-self:center">Не можу записати, оціню себе сам</button>`);
+  document.getElementById("selfr").textContent = "Мікрофон не працює? Заспівай через клавіатуру";
+  document.getElementById("selfr").onclick = () => keyboardSing("");
+  mic.onclick = () => {
+    if (listening) {
+      if (DICT) { DICT.stop().then(() => { setLive(false); evaluate(); }).catch(() => { setLive(false); evaluate(); }); }
+      else if (srObj) { try { srObj.stop(); } catch (e) {} }
+      return;
+    }
+    text = ""; partial = "";
+    if (DICT) {
+      dictHandlers.partial = t => { partial = t; show(); };
+      dictHandlers.final = t => { text = (text + " " + t).trim(); partial = ""; show(); };
+      dictHandlers.state = (state, reason) => { if (state === "idle" && listening) { setLive(false); if (reason && reason !== "stopped" && reason !== "viewer_stopped" && !text) heard.textContent = "Запис зупинився. Натисни мікрофон ще раз."; else evaluate(); } };
+      DICT.start({ language: "en" }).catch(e => {
+        setLive(false);
+        keyboardSing(e && e.code === "not_granted" ? "Доступ до мікрофона для цієї сторінки вимкнено." : "Мікрофон сторінки тут не запустився (" + ((e && e.code) || "помилка") + ").");
+      });
+      stopAudio(); setLive(true); show();
+      return;
+    }
+    try {
+      stopAudio();
+      srObj = new BrowserSR(); srObj.lang = "en-US"; srObj.interimResults = true; srObj.continuous = true;
+      srObj.onresult = e => { let f = "", p = ""; for (let i = 0; i < e.results.length; i++) { if (e.results[i].isFinal) f += " " + e.results[i][0].transcript; else p += " " + e.results[i][0].transcript; } text = f.trim(); partial = p.trim(); show(); };
+      srObj.onerror = ev => { setLive(false); srObj = null; keyboardSing("Мікрофон сторінки тут не запустився (" + ((ev && ev.error) || "помилка") + ")."); };
+      srObj.onend = () => { if (listening) { setLive(false); srObj = null; evaluate(); } };
+      srObj.start(); setLive(true); show();
+    } catch (e) { setLive(false); keyboardSing("Мікрофон сторінки тут не запустився."); }
+  };
+}
+
+/* retell / own sentence (alternates by session), checked by AI when it is available */
+function stepRetell() {
+  const s = sesSong(), l = sesLine(), lp = s.lp[SES.idx];
+  const own = (lp.sessions % 2 === 1) || !l.ua;
+  const w = l.words[0];
+  if (own && w) {
+    lessonFrame(`<div class="stack"><span class="kind">Своє речення</span><h2>Склади речення зі словом «${esc(w.w)}»</h2></div>
+      <div class="card"><p class="muted small">Про себе, своє життя чи будь-що. Можна дуже просто: 2–4 слова. ${w.ua ? `«${esc(w.w)}» означає «${esc(w.ua)}».` : ""}</p>
+      <input type="text" id="ans" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="наприклад: I am not a ${esc(w.w)}">
+      <div id="fb"></div></div>`);
+    const inp = document.getElementById("ans");
+    setBar(`<button class="btn" id="chk">${SAMPLE ? "Перевірити" : "Готово"}</button><button class="linkbtn" id="skip" style="align-self:center">Пропустити</button>`);
+    document.getElementById("skip").onclick = next;
+    document.getElementById("chk").onclick = async () => {
+      const t = inp.value.trim(); if (!t) { inp.focus(); return; }
+      const hasW = toks(t).some(x => same(x, w.w) || near(x, w.w));
+      if (!SAMPLE) { verdict(hasW, hasW ? "Зараховано! Скажи його вголос" : `Додай у речення слово «${w.w}»`); if (hasW) bumpWord(s, w.w, 0.1); save(); return; }
+      const b = document.getElementById("chk"); b.disabled = true; b.textContent = "Перевіряю…";
+      try {
+        const r = await SAMPLE(`Учень з нульовим рівнем англійської склав речення зі словом "${w.w}": "${t}". Відповідай українською, до 35 слів, без вступу: чи правильно; якщо ні, виправлений варіант англійською; одна коротка порада.`, { modelTier: "quick" });
+        document.getElementById("fb").innerHTML = `<div class="okbox">${esc(r.text)}</div>`;
+        if (hasW) bumpWord(s, w.w, 0.1); save();
+        setBar(`<button class="btn good" id="cont">Далі</button>`); document.getElementById("cont").onclick = next;
+      } catch (e) { verdict(hasW, hasW ? "Зараховано!" : `Додай у речення слово «${w.w}»`); }
+    };
+    return;
+  }
+  lessonFrame(`<div class="stack"><span class="kind">Переказ</span><h2>Про що цей рядок? Своїми словами</h2></div>
+    <div class="card"><div class="lyric">${esc(l.en)}</div>${lineButtons(SES.idx, l.en)}
+    <textarea id="ans" style="min-height:90px" placeholder="українською, як би пояснив другу"></textarea>
+    <div id="fb"></div>
+    <div id="cmp" hidden><span class="label">Переклад</span><div class="tr">${esc(l.ua)}</div></div></div>`);
+  wireAudio();
+  setBar(`<button class="btn" id="chk">Перевірити</button><button class="linkbtn" id="skip" style="align-self:center">Пропустити</button>`);
+  document.getElementById("skip").onclick = next;
+  document.getElementById("chk").onclick = async () => {
+    const t = document.getElementById("ans").value.trim();
+    document.getElementById("cmp").hidden = false;
+    if (SAMPLE && t) {
+      const b = document.getElementById("chk"); b.disabled = true; b.textContent = "Перевіряю…";
+      try {
+        const r = await SAMPLE(`Рядок пісні: "${l.en}". Правильний зміст: "${l.ua}". Учень-новачок переказав українською: "${t}". Відповідь українською, до 25 слів, без вступу. Перше слово відповіді ТАК, якщо зміст переданий загалом правильно, або НІ.`, { modelTier: "quick" });
+        const ok = /^\s*\**так/i.test(r.text);
+        document.getElementById("fb").innerHTML = `<div class="${ok ? "okbox" : "warn"}">${esc(r.text)}</div>`;
+        if (ok) { toks(l.en).forEach(x => bumpWord(s, x, 0.05)); save(); }
+        verdict(ok, ok ? "Зміст зрозумів!" : "Порівняй з перекладом вище");
+        return;
+      } catch (e) {}
+    }
+    setBar(`<div class="verdict" style="color:var(--ink)">Зміст збігся?</div><div class="two"><button class="btn ghost" id="no">Не зовсім</button><button class="btn good" id="yes">Так</button></div>`);
+    document.getElementById("no").onclick = next;
+    document.getElementById("yes").onclick = () => { toks(l.en).forEach(x => bumpWord(s, x, 0.05)); save(); next(); };
+  };
+}
+
+/* result */
+function finishSession() {
+  stopAudio();
+  const s = sesSong(), lp = s.lp[SES.idx];
+  lp.sessions++;
+  if (SES.gapsClean && lp.level < 3) lp.level++;
+  const acc = SES.fTotal ? SES.fRight / SES.fTotal : 1;
+  lp.lastAcc = acc;
+  const passed = acc >= 0.75;
+  if (passed && SES.isNew && SES.idx === s.next) s.next++;
+  bumpStreak(); save();
+  const after = songPct(s), before = SES.before, idx = SES.idx;
+  const doneAll = s.next >= s.lines.length;
+  app.innerHTML = `
+  <div class="stack" style="text-align:center;padding-top:12px"><span class="kind">Сесію завершено</span><h1>${!passed ? "Ще трохи, і рядок твій" : SES.missed === 0 ? "Чисто, без жодної помилки!" : "Ще один рядок у тебе в голові"}</h1></div>
+  <div class="card resultpct">
+    <span class="label">${esc(s.artist)} — ${esc(s.title)}</span>
+    <div class="pct" id="cnt">${fmtPct(before)}<small>%</small></div>
+    <div class="delta">+${fmtPct(Math.max(0, after - before))}%</div>
+    <div class="progressline"><div id="pl" style="width:${before}%"></div></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>${SES.right}/${SES.total}</b><span>правильних відповідей</span></div>
+    <div class="stat"><b>${SES.sing == null ? "—" : Math.round(SES.sing * 100) + "%"}</b><span>рядка заспівано</span></div>
+    <div class="stat"><b>${SES.fresh}</b><span>нових слів</span></div>
+    <div class="stat"><b>${streakNow()}</b><span>${plural(streakNow(), "день", "дні", "днів")} поспіль</span></div>
+  </div>
+  <div class="card" style="gap:8px"><div class="row" style="justify-content:space-between"><b>Рядок пройдено на ${Math.round(acc * 100)}%</b><span class="badge ${passed ? "on" : ""}">${passed ? "Далі відкрито" : "Треба 75%"}</span></div><div class="progressline"><div style="width:${Math.round(acc * 100)}%;background:${passed ? "var(--good)" : "var(--sun)"}"></div></div><p class="small muted">${passed ? "Добре закріпив. Можна йти до наступного рядка." : "Повторимо цей рядок ще раз, поки слова не сядуть. Рахуються відповіді з першої спроби."}</p></div>
+  <p class="lessons-left">Слова з цієї сесії повернуться завтра. ${lp.level >= 3 ? "Цей рядок ти вже пишеш повністю з пам'яті." : "Наступного разу в рядку буде більше пропусків."}</p>`;
+  setBar(passed ? `<button class="btn sun" id="more">${doneAll ? "Ще один рядок" : `Наступний рядок (${s.next + 1}/${s.lines.length})`}</button><div class="two"><button class="btn ghost" id="repeat">Цей рядок ще раз</button><button class="btn ghost" id="home">На головну</button></div>`
+    : `<button class="btn sun" id="repeat">Повторити цей рядок</button><button class="btn ghost" id="home">На головну</button>`);
+  const more = document.getElementById("more"); if (more) more.onclick = () => startSession();
+  document.getElementById("repeat").onclick = () => startSession(idx);
+  document.getElementById("home").onclick = route;
+  const cnt = document.getElementById("cnt"), pl = document.getElementById("pl");
+  const t0 = performance.now(), dur = 1100;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const tick = now => {
+    const k = reduce ? 1 : Math.min(1, (now - t0) / dur); const e = 1 - Math.pow(1 - k, 3);
+    const v = before + (after - before) * e;
+    cnt.innerHTML = fmtPct(v) + "<small>%</small>"; pl.style.width = v + "%";
+    if (k < 1) requestAnimationFrame(tick);
+  };
+  setTimeout(() => requestAnimationFrame(tick), 300);
+  SES = null; VIEW = "result";
+}
+
+window.__ryadok = { parseLyrics, scoreSung, same, near, diffHtml, songPct, syllabify };
+route();
+})();
+</script>
+</body>
+</html>
