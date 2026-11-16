@@ -286,7 +286,11 @@ const EN_POOL = ["night", "heart", "home", "light", "time", "road", "dream", "fi
 /* ---------- state ---------- */
 const KEY = "ryadok-state-v1";
 function blank() { return { v: 2, updatedAt: 0, cur: null, songs: {}, words: {}, streak: { last: null, n: 0 } }; }
-function loadLocal() { try { const t = localStorage.getItem(KEY); if (t) return Object.assign(blank(), JSON.parse(t)); } catch (e) {} return blank(); }
+/* lyric sites sometimes mix Cyrillic look-alike letters into English words (dеsperate) */
+const LAT = { "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "і": "i", "А": "A", "В": "B", "Е": "E", "К": "K", "М": "M", "Н": "H", "О": "O", "Р": "P", "С": "C", "Т": "T", "Х": "X", "І": "I" };
+function fixLat(t) { return String(t || "").replace(/[аеорсухіАВЕКМНОРСТХІ]/g, c => LAT[c]); }
+function fixSong(s) { if (!s) return; if (s.raw) s.raw = fixLat(s.raw); (s.lines || []).forEach(l => { l.en = fixLat(l.en); (l.words || []).forEach(w => { if (w.w) w.w = fixLat(w.w); }); }); }
+function loadLocal() { try { const t = localStorage.getItem(KEY); if (t) { const st = Object.assign(blank(), JSON.parse(t)); Object.values(st.songs || {}).forEach(fixSong); return st; } } catch (e) {} return blank(); }
 let S = loadLocal();
 let cloudRef = null, cloudBusy = false, cloudDirty = false, cloudTimer = null;
 function save() {
@@ -465,6 +469,7 @@ const BrowserSR = window.SpeechRecognition || window.webkitSpeechRecognition || 
 
 /* ---------- lyrics → song ---------- */
 function parseLyrics(raw) {
+  raw = fixLat(raw);
   const rawLines = String(raw || "").split(/\r?\n/).map(l => l.replace(/\[\d{1,3}:\d{2}(?:[.:]\d{1,3})?\]/g, "").replace(/\s+/g, " ").trim())
     .filter(l => l && !/^\[.*\]$/.test(l) && !/^(verse|chorus|bridge|intro|outro|pre-?chorus|hook|refrain|приспів|куплет)\b[^a-z]*\d*\s*:?\s*$/i.test(l) && toks(l).length > 0);
   const total = rawLines.reduce((n, l) => n + toks(l).length, 0);
@@ -480,6 +485,7 @@ function parseLyrics(raw) {
 }
 /* synced lyrics (LRC): "[00:12.34] text" → start/end of every lesson line, no tapping */
 function parseLRC(raw) {
+  raw = fixLat(raw);
   const out = [];
   String(raw || "").split(/\r?\n/).forEach(l => {
     const tags = [...l.matchAll(/\[(\d{1,3}):(\d{2})(?:[.:](\d{1,3}))?\]/g)]; if (!tags.length) return;
@@ -639,7 +645,7 @@ function renderSetup(errMsg) {
     const p = ADD.pick; const parsed = parseLyrics(p.lrc);
     if (parsed.lines.length < 2) { renderSetup("Замало рядків у тексті пісні."); return; }
     const id = "s" + Date.now().toString(36);
-    const song = { id, artist: p.artist, title: p.title, raw: p.lrc, lines: parsed.lines, total: parsed.total, uniq: parsed.uniq, diff: parsed.diff, wpl: parsed.wpl, rawCount: parsed.rawCount,
+    const song = { id, artist: p.artist, title: p.title, raw: fixLat(p.lrc), lines: parsed.lines, total: parsed.total, uniq: parsed.uniq, diff: parsed.diff, wpl: parsed.wpl, rawCount: parsed.rawCount,
       ws: {}, lp: {}, next: 0, ready: false, created: Date.now(), spans: {}, adj: {}, videoId: videoId || null, offset: 0, duration: p.duration || 0 };
     spansFromLRC(song, song.raw);
     renderTranslate(song);
