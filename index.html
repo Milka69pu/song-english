@@ -374,12 +374,12 @@ function ensurePlayer(song, onReady) {
   if (!ytApiReady || !window.YT || !YT.Player) { pendingSong = song; return; }
   pendingSong = null;
   if (YTP && ytVideo === song.videoId) { audioSongId = song.id; if (onReady) onReady(); return; }
-  if (YTP && YTP.cueVideoById) { YTP.cueVideoById(song.videoId); ytVideo = song.videoId; audioSongId = song.id; audioReady = true; if (onReady) onReady(); return; }
+  if (YTP && YTP.cueVideoById) { YTP.cueVideoById(song.videoId); ytVideo = song.videoId; audioSongId = song.id; audioReady = true; if (onReady) onReady(); autoSync(song); return; }
   ytVideo = song.videoId;
   YTP = new YT.Player("yt", {
     videoId: song.videoId, width: "100%", height: "100%",
     playerVars: { playsinline: 1, rel: 0, controls: 1, disablekb: 1 },
-    events: { onReady: () => { audioReady = true; audioSongId = song.id; if (onReady) onReady(); if (VIEW === "home" && !SES) renderHome(); }, onError: () => { audioReady = false; } }
+    events: { onReady: () => { audioReady = true; audioSongId = song.id; if (onReady) onReady(); autoSync(song); }, onError: () => { audioReady = false; } }
   });
 }
 function showPlayer(on) { const b = document.getElementById("ytbox"); if (b) b.hidden = !on; if (!on) stopAudio(); }
@@ -411,6 +411,23 @@ function playRange(from, to, opts = {}) {
   return true;
 }
 async function loadAudioFor(song) { ensurePlayer(song); }
+
+/* a music video often has an intro scene, so lyric times (made for the album audio) start too early.
+   Compare the video length with the album length and shift the text by the difference as a first guess. */
+function autoSync(song) {
+  if (!song || !song.videoId || song.syncFor === song.videoId) return;
+  let n = 0; const iv = setInterval(() => {
+    let d = 0; try { d = (YTP && YTP.getDuration && YTP.getDuration()) || 0; } catch (e) {}
+    if (d <= 0 && ++n < 40) return;
+    clearInterval(iv); if (d <= 0 || ytVideo !== song.videoId) return;
+    song.vdur = Math.round(d); song.syncFor = song.videoId;
+    const extra = song.duration ? d - song.duration : 0;
+    if (!song.offsetSet && extra > 3) song.offset = Math.round(extra * 10) / 10;
+    save();
+    if (VIEW === "home" && !SES && !KAR && !SYNC) renderHome();
+  }, 250);
+}
+function firstLineT(song) { const e = parseLRC(song.raw).find(x => x.text); return e ? e.t : 0; }
 const RAWC = new WeakMap();
 function rawInfo(song) { let v = RAWC.get(song); if (!v || v.src !== song.raw) { v = parseLyrics(song.raw || ""); v.src = song.raw; RAWC.set(song, v); } return v; }
 function lineSpan(song, idx) {
@@ -738,28 +755,66 @@ function finishSong(song) {
 }
 
 /* ---------- home ---------- */
+let SYNC = false;
+function offTxt(o) { o = o || 0; return (o > 0 ? "+" : "") + o.toFixed(1).replace(".", ",") + " с"; }
 function audioCardHtml(s) {
   if (!s.videoId) return `<div class="card"><h3>Звук пісні</h3><p class="small muted">Додай посилання на відео пісні з YouTube, щоб рядки звучали голосом виконавця і працював караоке-режим. Найкраще «Official Audio».</p>
     <a class="btn ghost sm" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.artist + " " + s.title + " official audio")}" target="_blank" rel="noopener">Відкрити пошук на YouTube</a>
     <div class="row" style="flex-wrap:nowrap"><input type="text" id="ytlink" placeholder="https://youtu.be/…"><button class="btn sm" id="setyt">Додати</button></div></div>`;
-  const off = s.offset || 0;
+  const first = (parseLRC(s.raw).find(x => x.text) || {}).text || "";
+  const extra = s.vdur && s.duration ? Math.round(s.vdur - s.duration) : 0;
+  const guess = extra > 3 ? `<p class="small">Це відео довше за пісню на <b>${extra} с</b>, схоже, на початку є сцена. Я вже зсунув текст на <b>${offTxt(s.offset)}</b>. Підтверди одним тапом, щоб було точно.</p>` : "";
+  const panel = `<div id="syncbox" class="stack small" hidden>
+      <p>Слухай відео. Щойно почуєш перші слова <b>«${esc(first)}»</b>, тапни велику кнопку.</p>
+      <button class="btn" id="tapnow">Зараз! Почався перший рядок</button>
+      <div class="row"><button class="btn ghost sm" id="tapre">Грати з початку відео</button><button class="btn ghost sm" id="tapcancel">Скасувати</button></div>
+    </div>`;
+  if (!s.offsetSet) return `<div class="card"><h3>Підлаштуй текст під відео</h3>
+    <p class="small muted">Час рядків зроблено під альбомну версію. У кліпі пісня може починатися пізніше, тож один раз покажи сайту, де звучить перший рядок.</p>
+    ${guess}
+    <button class="btn" id="tapsync">Підлаштувати одним тапом</button>${panel}</div>`;
   return `<div class="card"><details><summary>Синхронізація тексту з піснею</summary>
     <div class="stack small" style="margin-top:8px">
-      <p class="muted">Якщо підсвітка поспішає чи запізнюється, підсунь текст і перевір на першому рядку. Зараз: <b id="offv">${off > 0 ? "+" : ""}${off.toFixed(1).replace(".", ",")} с</b></p>
+      <p class="muted">Текст зсунуто на <b id="offv">${offTxt(s.offset)}</b>. Якщо підсвітка поспішає чи запізнюється, підсунь трохи або налаштуй заново.</p>
       <div class="row"><button class="btn ghost sm" id="offm">Текст раніше −0,5 с</button><button class="btn ghost sm" id="offp">Текст пізніше +0,5 с</button></div>
-      <button class="btn ghost sm" id="offtest">Перевірити на першому рядку</button>
+      <div class="row"><button class="btn ghost sm" id="offtest">Послухати перший рядок</button><button class="btn ghost sm" id="tapsync">Налаштувати заново</button></div>
+      ${panel}
       <div class="row" style="flex-wrap:nowrap"><input type="text" id="ytlink" placeholder="інше відео: https://youtu.be/…"><button class="btn ghost sm" id="setyt">Змінити</button></div>
     </div></details></div>`;
 }
+function playFirstLine(s) {
+  showPlayer(true);
+  ensurePlayer(s, () => { const i = s.lines.findIndex((l, k) => lineSpan(s, k)); if (i >= 0) { const sp = lineSpan(s, i); playRange(sp.start, sp.end); } });
+  document.getElementById("ytbox").scrollIntoView({ behavior: "smooth" });
+}
 function wireAudioCard(s) {
   const set = document.getElementById("setyt");
-  if (set) set.onclick = () => { const v = ytId(document.getElementById("ytlink").value); if (!v) { document.getElementById("ytlink").focus(); return; } s.videoId = v; s.offset = 0; save(); ensurePlayer(s); renderHome(); };
-  const upd = d => { s.offset = Math.round(((s.offset || 0) + d) * 10) / 10; save(); const v = document.getElementById("offv"); if (v) v.textContent = (s.offset > 0 ? "+" : "") + s.offset.toFixed(1).replace(".", ",") + " с"; };
+  if (set) set.onclick = () => { const v = ytId(document.getElementById("ytlink").value); if (!v) { document.getElementById("ytlink").focus(); return; } s.videoId = v; s.offset = 0; s.offsetSet = false; s.syncFor = null; s.vdur = 0; save(); ensurePlayer(s); renderHome(); };
+  const upd = d => { s.offset = Math.round(((s.offset || 0) + d) * 10) / 10; s.offsetSet = true; save(); const v = document.getElementById("offv"); if (v) v.textContent = offTxt(s.offset); };
   const m = document.getElementById("offm"), p = document.getElementById("offp"), t = document.getElementById("offtest");
   if (m) m.onclick = () => upd(-0.5); if (p) p.onclick = () => upd(0.5);
-  if (t) t.onclick = () => {
-    showPlayer(true); ensurePlayer(s, () => { const i = s.lines.findIndex((l, k) => lineSpan(s, k)); if (i >= 0) { const sp = lineSpan(s, i); playRange(sp.start, sp.end); } });
-    document.getElementById("ytbox").scrollIntoView({ behavior: "smooth" });
+  if (t) t.onclick = () => playFirstLine(s);
+  const ts = document.getElementById("tapsync"); if (!ts) return;
+  const t0 = firstLineT(s);
+  const go = from => { try { YTP.setPlaybackRate(1); YTP.seekTo(Math.max(0, from), true); YTP.playVideo(); } catch (e) {} };
+  ts.onclick = () => {
+    SYNC = true; stopAudio(); ts.hidden = true; document.getElementById("syncbox").hidden = false;
+    showPlayer(true); document.getElementById("syncbox").scrollIntoView({ behavior: "smooth", block: "center" });
+    ensurePlayer(s, () => {
+      let n = 0; const iv = setInterval(() => {
+        let d = 0; try { d = YTP.getDuration() || 0; } catch (e) {}
+        if (d <= 0 && ++n < 12) return; clearInterval(iv);
+        const extra = d > 0 && s.duration ? d - s.duration : 0;
+        go(t0 + (s.offsetSet ? (s.offset || 0) : (extra > 3 ? extra : 0)) - 10);
+      }, 250);
+    });
+  };
+  document.getElementById("tapre").onclick = () => go(0);
+  document.getElementById("tapcancel").onclick = () => { SYNC = false; ytPause(); renderHome(); };
+  document.getElementById("tapnow").onclick = () => {
+    const now = curTime(); if (!now) return;
+    s.offset = Math.round((now - 0.3 - t0) * 10) / 10; s.offsetSet = true; SYNC = false; save(); ytPause();
+    renderHome(); playFirstLine(s);
   };
 }
 function renderHome() {
